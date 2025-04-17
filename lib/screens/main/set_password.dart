@@ -3,14 +3,14 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
 
-class CreateScreenView extends StatefulWidget {
-  const CreateScreenView({super.key});
+class SetPasswordView extends StatefulWidget {
+  const SetPasswordView({super.key});
 
   @override
-  State<CreateScreenView> createState() => _CreateScreenView();
+  State<SetPasswordView> createState() => _SetPasswordView();
 }
 
-class _CreateScreenView extends State<CreateScreenView> {
+class _SetPasswordView extends State<SetPasswordView> {
   final _formKey = GlobalKey<FormState>();
 
   final _titleController = TextEditingController();
@@ -45,7 +45,7 @@ class _CreateScreenView extends State<CreateScreenView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.home);
+            Navigator.pushNamed(context, AppRoutes.create);
           },
         ),
         elevation: 1,

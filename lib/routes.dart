@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/screens/main/create_qrcode.dart';
+import 'package:qrvault/screens/main/set_password.dart';
 import 'package:qrvault/screens/onboarding/onboarding_screen.dart';
 import 'package:qrvault/screens/splash/splash_screen.dart';
 
@@ -9,7 +10,8 @@ class AppRoutes {
     '/': (context) => SplashScreen(),
     '/onboarding': (context) => OnboardingScreen(),
     '/home': (context) => HomeScreenView(),
-    '/create': (context) => CreateScreenView()
+    '/create': (context) => CreateScreenView(),
+    '/setPassword' : (context) => SetPasswordView(),
     // '/settings': (context) => SettingsScreen(),
   };
   
@@ -18,4 +20,5 @@ class AppRoutes {
   static const String home = '/home';
   static const String settings = '/settings';
   static const String create = '/create';
+  static const String password = '/setPassword';
 }

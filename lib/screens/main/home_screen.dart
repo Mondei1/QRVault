@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:qrvault/routes.dart';
 
 class HomeScreenView extends StatefulWidget {
   const HomeScreenView({super.key});
@@ -115,7 +116,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FloatingActionButton.extended(
           onPressed: () {
-            //TODO: Implement onPressedCreate
+           Navigator.pushNamed(context, AppRoutes.create);
           },
           icon: const Icon(Icons.add_circle_outline),
           label: const Text('Create'),
