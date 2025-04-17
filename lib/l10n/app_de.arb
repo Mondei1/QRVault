@@ -1,0 +1,22 @@
+{
+  "@@locale": "de",
+  "appTitle": "QRVault",
+  "settings": "Einstellungen",
+  "create": "Erstellen",
+  "welcome": "Willkommen",
+  "welcomeDescription": "QRVault ermöglicht es dir, Ihr Passwort auf dem sichersten Offline-Medium zu speichern, das es gibt: Papier 📃.",
+  "offlineStorage": "Offline Speicher",
+  "offlineStorageDescription": "Gedruckte QR-Codes können nicht angegriffen werden. Dank der Verschlüsselung sind sie auch vor dem Scannen durch andere Personen geschützt.",
+  "security": "Sicherheit",
+  "securityDescription": "Alles auf Ihrem QR-Code ist verschlüsselt. Es gibt jedoch einige Ausnahmen:",
+  "titleUnencrypted": "Ihr Titel ist unverschlüsselt.",
+  "passwordHintUnencrypted": "Ihr Passworthinweis ist unverschlüsselt.",
+  "encryptionInfo": "QRVault verwendet AES-256-Verschlüsselung und Argon2id-Hashing nach Industriestandard.",
+  "errorInitializingCamera": "Fehler bei der Kamerainitialisierung: {error}",
+  "languageChanged": "Sprache geändert. Bitte starten Sie die App neu, damit die Änderungen wirksam werden.",
+  "systemDefault": "Systemstandard",
+  "useSystemLanguage": "Verwenden Sie die Spracheinstellungen des Systems",
+  "englishLanguage": "Englisch",
+  "germanLanguage": "Deutsch",
+  "deutschLanguage": "Deutsch"
+}

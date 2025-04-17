@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/routes.dart';
 
 class HomeScreenView extends StatefulWidget {
@@ -60,16 +61,18 @@ class _HomeScreenViewState extends State<HomeScreenView> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: Text(
-          'QRVault',
+          AppLocalizations.of(context)!.appTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.settings),
-          onPressed: () {
-            //TODO: Implement onPressedSettings
-          },
-        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRoutes.language);
+            },
+          ),
+        ],
         elevation: 1,
       ),
       body: Column(
@@ -102,8 +105,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
                       ));
                 } else if (snapshot.hasError) {
                   return Center(
-                      child:
-                          Text("Error initializing camera: ${snapshot.error}"));
+                      child: Text(AppLocalizations.of(context)!.errorInitializingCamera('${snapshot.error}')));
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -119,7 +121,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
            Navigator.pushNamed(context, AppRoutes.create);
           },
           icon: const Icon(Icons.add_circle_outline),
-          label: const Text('Create'),
+          label: Text(AppLocalizations.of(context)!.create),
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         ),
       ),

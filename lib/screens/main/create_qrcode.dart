@@ -163,7 +163,7 @@ class _CreateScreenView extends State<CreateScreenView> {
             minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
-            //TODO: Implement onPressedGenerate
+            Navigator.pushNamed(context, AppRoutes.password);
           },
         ),
       ),

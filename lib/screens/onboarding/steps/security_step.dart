@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/routes.dart';
 
 class SecurityStepView extends StatelessWidget {
@@ -25,7 +26,7 @@ class SecurityStepView extends StatelessWidget {
 
           // Welcome text
           Text(
-            "Security",
+            AppLocalizations.of(context)!.security,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 32,
@@ -37,7 +38,7 @@ class SecurityStepView extends StatelessWidget {
 
           // Description text
           Text(
-            "Everything on your QR code is encrypted. However, there are a few exceptions:",
+            AppLocalizations.of(context)!.securityDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
@@ -60,7 +61,7 @@ class SecurityStepView extends StatelessWidget {
                     Padding(
                         padding: EdgeInsets.only(right: 16),
                         child: Icon(Icons.title)),
-                    Text("Your title is unencrypted.")
+                    Text(AppLocalizations.of(context)!.titleUnencrypted)
                   ],
                 ),
                 Row(
@@ -69,7 +70,7 @@ class SecurityStepView extends StatelessWidget {
                     Padding(
                         padding: EdgeInsets.only(right: 16),
                         child: Icon(Icons.lightbulb)),
-                    Text("Your password hint is unencrypted.")
+                    Text(AppLocalizations.of(context)!.passwordHintUnencrypted)
                   ],
                 )
               ],
@@ -96,7 +97,7 @@ class SecurityStepView extends StatelessWidget {
                     ),
                     Flexible(
                         child: Text(
-                            "QRVault uses industry-standard AES-256 encryption and Argon2id hashing."))
+                            AppLocalizations.of(context)!.encryptionInfo))
                   ],
                 ),
               ))

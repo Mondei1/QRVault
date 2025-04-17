@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class WelcomeStepView extends StatelessWidget {
   const WelcomeStepView({super.key});
@@ -25,7 +27,7 @@ class WelcomeStepView extends StatelessWidget {
 
           // Welcome text
           Text(
-            "Welcome",
+            AppLocalizations.of(context)!.welcome,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 32,
@@ -37,7 +39,7 @@ class WelcomeStepView extends StatelessWidget {
 
           // Description text
           Text(
-            "QRVault allows you to store password on the\nsafest offline medium known: Paper 📃",
+            AppLocalizations.of(context)!.welcomeDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,

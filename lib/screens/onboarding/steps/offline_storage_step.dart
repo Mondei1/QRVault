@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OfflineStorageStepView extends StatelessWidget {
   const OfflineStorageStepView({super.key});
@@ -26,7 +27,7 @@ class OfflineStorageStepView extends StatelessWidget {
 
           // Welcome text
           Text(
-            "Offline storage",
+            AppLocalizations.of(context)!.offlineStorage,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,
               fontSize: 32,
@@ -38,7 +39,7 @@ class OfflineStorageStepView extends StatelessWidget {
 
           // Description text
           Text(
-            "Printed QR codes cannot be hacked. They are also protected against other people scanning them thanks to encryption.",
+            AppLocalizations.of(context)!.offlineStorageDescription,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Theme.of(context).colorScheme.onSurface,

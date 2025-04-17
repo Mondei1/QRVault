@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:qrvault/config/language_service.dart';
 import 'package:qrvault/config/shared_preferences_helper.dart';
 import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/splash/splash_screen.dart';
 import 'package:qrvault/theme/theme_aware_status_bar.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,36 +42,53 @@ class MyApp extends StatelessWidget {
         ColorScheme lightColorScheme = lightDynamic ?? defaultLightColorScheme;
         ColorScheme darkColorScheme = darkDynamic ?? defaultDarkColorScheme;
 
-        return ThemeAwareStatusBar(
-          child: MaterialApp(
-            title: 'QRVault',
-            debugShowCheckedModeBanner: false,
-            routes: AppRoutes.routes,
-            theme: ThemeData(
-              colorScheme: lightColorScheme,
-              useMaterial3: true,
-              appBarTheme: AppBarTheme(
-                systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarColor: Colors.transparent,
-                  statusBarIconBrightness: Brightness.dark,
-                  statusBarBrightness: Brightness.light,
+        // Get the app-specific locale if available
+        return FutureBuilder<Locale?>(
+          future: LanguageService.getAppLocale(),
+          builder: (context, snapshot) {
+            // Default to null (system locale) if not available
+            final appLocale = snapshot.data;
+            
+            return ThemeAwareStatusBar(
+              child: MaterialApp(
+                title: 'QRVault',
+                debugShowCheckedModeBanner: false,
+                routes: AppRoutes.routes,
+                
+                // Localization setup
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                
+                // Use app-specific locale if available, otherwise use device locale
+                locale: appLocale,
+                
+                theme: ThemeData(
+                  colorScheme: lightColorScheme,
+                  useMaterial3: true,
+                  appBarTheme: AppBarTheme(
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.dark,
+                      statusBarBrightness: Brightness.light,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            darkTheme: ThemeData(
-              colorScheme: darkColorScheme,
-              useMaterial3: true,
-              appBarTheme: AppBarTheme(
-                systemOverlayStyle: SystemUiOverlayStyle(
-                  statusBarColor: Colors.transparent,
-                  statusBarIconBrightness: Brightness.light,
-                  statusBarBrightness: Brightness.dark,
+                darkTheme: ThemeData(
+                  colorScheme: darkColorScheme,
+                  useMaterial3: true,
+                  appBarTheme: AppBarTheme(
+                    systemOverlayStyle: SystemUiOverlayStyle(
+                      statusBarColor: Colors.transparent,
+                      statusBarIconBrightness: Brightness.light,
+                      statusBarBrightness: Brightness.dark,
+                    ),
+                  ),
                 ),
+                // Use system theme mode
+                themeMode: ThemeMode.system,
               ),
-            ),
-            // Use system theme mode
-            themeMode: ThemeMode.system,
-          ),
+            );
+          }
         );
       },
     );
