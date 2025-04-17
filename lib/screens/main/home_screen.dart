@@ -11,13 +11,13 @@ class HomeScreenView extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreenView> {
-  CameraController? _controller; 
-  Future<void>? _initializeControllerFuture; 
+  CameraController? _controller;
+  Future<void>? _initializeControllerFuture;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera(); 
+    _initializeCamera();
   }
 
   Future<void> _initializeCamera() async {
@@ -31,7 +31,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
 
       _controller = CameraController(
         firstCamera,
-        ResolutionPreset.medium, 
+        ResolutionPreset.medium,
       );
 
       _initializeControllerFuture = _controller!.initialize();
@@ -39,7 +39,7 @@ class _HomeScreenViewState extends State<HomeScreenView> {
         if (!mounted) {
           return;
         }
-        setState(() {}); 
+        setState(() {});
       });
     } catch (e) {
       log("Error initializing camera: $e");
@@ -77,10 +77,32 @@ class _HomeScreenViewState extends State<HomeScreenView> {
             child: FutureBuilder<void>(
               future: _initializeControllerFuture,
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done && _controller != null && _controller!.value.isInitialized) {
-                  return CameraPreview(_controller!);
+                if (snapshot.connectionState == ConnectionState.done &&
+                    _controller != null &&
+                    _controller!.value.isInitialized) {
+
+                  var camera = _controller?.value;
+                  // fetch screen size
+                  final size = MediaQuery.of(context).size;
+
+                  // calculate scale depending on screen and camera ratios
+                  // this is actually size.aspectRatio / (1 / camera.aspectRatio)
+                  // because camera preview size is received as landscape
+                  // but we're calculating for portrait orientation
+                  var scale = size.aspectRatio * camera!.aspectRatio;
+
+                  // to prevent scaling down, invert the value
+                  if (scale < 1) scale = 1 / scale;
+
+                  return Transform.scale(
+                      scale: scale,
+                      child: Center(
+                        child: CameraPreview(_controller!),
+                      ));
                 } else if (snapshot.hasError) {
-                    return Center(child: Text("Error initializing camera: ${snapshot.error}"));
+                  return Center(
+                      child:
+                          Text("Error initializing camera: ${snapshot.error}"));
                 } else {
                   return const Center(child: CircularProgressIndicator());
                 }
@@ -93,13 +115,13 @@ class _HomeScreenViewState extends State<HomeScreenView> {
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FloatingActionButton.extended(
           onPressed: () {
-           //TODO: Implement onPressedCreate
+            //TODO: Implement onPressedCreate
           },
-          icon: const Icon(Icons.add),
+          icon: const Icon(Icons.add_circle_outline),
           label: const Text('Create'),
-          backgroundColor: Theme.of(context).colorScheme.surface,
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
         ),
       ),
     );
   }
-} 
+}

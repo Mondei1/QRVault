@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:qrvault/config/shared_preferences_helper.dart';
 import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/splash/splash_screen.dart';
+import 'package:qrvault/theme/theme_aware_status_bar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedPreferencesHelper.init();
+  
+  // Set up the status bar to be transparent and adapt to theme
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+  ));
+  
   runApp(const MyApp());
 }
 
@@ -31,20 +39,36 @@ class MyApp extends StatelessWidget {
         ColorScheme lightColorScheme = lightDynamic ?? defaultLightColorScheme;
         ColorScheme darkColorScheme = darkDynamic ?? defaultDarkColorScheme;
 
-        return MaterialApp(
-          title: 'QRVault',
-          debugShowCheckedModeBanner: false,
-          routes: AppRoutes.routes,
-          theme: ThemeData(
-            colorScheme: lightColorScheme,
-            useMaterial3: true,
+        return ThemeAwareStatusBar(
+          child: MaterialApp(
+            title: 'QRVault',
+            debugShowCheckedModeBanner: false,
+            routes: AppRoutes.routes,
+            theme: ThemeData(
+              colorScheme: lightColorScheme,
+              useMaterial3: true,
+              appBarTheme: AppBarTheme(
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.dark,
+                  statusBarBrightness: Brightness.light,
+                ),
+              ),
+            ),
+            darkTheme: ThemeData(
+              colorScheme: darkColorScheme,
+              useMaterial3: true,
+              appBarTheme: AppBarTheme(
+                systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarColor: Colors.transparent,
+                  statusBarIconBrightness: Brightness.light,
+                  statusBarBrightness: Brightness.dark,
+                ),
+              ),
+            ),
+            // Use system theme mode
+            themeMode: ThemeMode.system,
           ),
-          darkTheme: ThemeData(
-            colorScheme: darkColorScheme,
-            useMaterial3: true,
-          ),
-          // Use system theme mode
-          themeMode: ThemeMode.system,
         );
       },
     );
