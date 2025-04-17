@@ -1,4 +1,4 @@
-package com.example.qrvault
+package dev.klier.qrvault
 
 import io.flutter.embedding.android.FlutterActivity
 
