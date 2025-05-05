@@ -1,0 +1,2 @@
+C:/QRVault/android/app/.cxx/Debug/293918x3/x86/CMakeFiles/edit_cache.dir
+C:/QRVault/android/app/.cxx/Debug/293918x3/x86/CMakeFiles/rebuild_cache.dir
