@@ -54,7 +54,7 @@ class LanguageService {
 extension LocaleExtension on Locale {
   String toLanguageTag() {
     if (countryCode?.isNotEmpty == true) {
-      return '${languageCode}-${countryCode}';
+      return '$languageCode-$countryCode';
     }
     return languageCode;
   }

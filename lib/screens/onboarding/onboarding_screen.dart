@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/config/shared_preferences_helper.dart';
-import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/screens/onboarding/steps/offline_storage_step.dart';
 import 'package:qrvault/screens/onboarding/steps/security_step.dart';
@@ -10,15 +9,15 @@ class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  _OnboardingScreenState createState() => _OnboardingScreenState();
+  OnboardingScreenState createState() => OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
   final List<Widget> _steps = [
-    const WelcomeStepView(),
+    WelcomeStepView(),
     OfflineStorageStepView(),
     SecurityStepView(),
     // CompletionStep()
@@ -26,8 +25,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _completeOnboarding() async {
     await SharedPreferencesHelper.setFirstRunComplete();
-    Navigator.pushReplacement(
+    if(mounted){
+      Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (_) => HomeScreenView()));
+    }
   }
 
   void _nextPage() {

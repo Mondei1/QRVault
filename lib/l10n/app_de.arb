@@ -18,5 +18,17 @@
   "useSystemLanguage": "Verwenden Sie die Spracheinstellungen des Systems",
   "englishLanguage": "Englisch",
   "germanLanguage": "Deutsch",
-  "deutschLanguage": "Deutsch"
+  "deutschLanguage": "Deutsch",
+  "masterpassword": "Master-Passwort",
+  "biometrics": "Biometrie",
+  "biometricsInfo": "Du kannst biometrische Daten verwenden, um dein Hauptpasswort zu schützen und die Nutzung zu erleichtern. Dies ist deine Standard-Verschlüsselungsmethode.",
+  "biometricsSupport": "Dein Gerät unterstützt die Authentifizierung mit Biometrie, das ist großartig! Du kannst sie als Master Passwort verwenden und so den Prozess der Verschlüsselung beschleunigen!",
+  "passwordRequirements": "QRVault stellt keine Anforderungen an dein Passwort – die Verantwortung liegt bei dir.",
+  "passwordHint": "Hinweis für das Passwort",
+  "storedUnencrypted": "Unverschlüsselt gespeichert",
+  "reinstallationInfo": "Wenn du diese App erneut installiert hast, solltest du dasselbe Master-Passwort wie zuvor verwenden.",
+  "useBiometrics": "Biometrie verwenden",
+  "skip": "Überspringen",
+  "loading": "Wir verschlüsseln Alles und sind gleich wieder zurück!",
+  "holdUp": "Einen Moment!"
 }

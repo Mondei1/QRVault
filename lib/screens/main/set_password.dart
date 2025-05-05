@@ -11,7 +11,7 @@ class SetPasswordView extends StatefulWidget {
 class _SetPasswordViewState extends State<SetPasswordView> {
   final _passwordController = TextEditingController();
   final _hintController = TextEditingController();
-  bool _isPasswordVisible = false;
+  final bool _isPasswordVisible = false;
 
   @override
   void dispose() {
