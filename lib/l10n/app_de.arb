@@ -50,5 +50,9 @@
   "copyUsernameTooltip": "Kopiere Nutzername",
   "copyEmailTooltip": "Kopiere Email",
   "copyPasswordTooltip": "Kopiere Passwort",
-  "copiedToClipboard": "Zur Zwischenablage hinzugefügt!"
+  "copiedToClipboard": "Zur Zwischenablage hinzugefügt!",
+  "tfaTotpLabel": "2FA (TOTP)",
+  "previousOtpLabelPrefix": "Vorh.:",
+  "nextOtpLabelPrefix": "Näch.:",
+  "scannedScreenTitle": "Entschlüsselte Daten"
 }

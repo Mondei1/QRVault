@@ -51,5 +51,9 @@
   "copyUsernameTooltip": "Copy Username",
   "copyEmailTooltip": "Copy Email",
   "copyPasswordTooltip": "Copy Password",
-  "copiedToClipboard": "Copied to clipboard!"
+  "copiedToClipboard": "Copied to clipboard!",
+  "tfaTotpLabel": "2FA (TOTP)",
+  "previousOtpLabelPrefix": "Prev:",
+  "nextOtpLabelPrefix": "Next:",
+  "scannedScreenTitle": "Scanned Details"
 }
