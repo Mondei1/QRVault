@@ -30,5 +30,19 @@
   "useBiometrics": "Biometrie verwenden",
   "skip": "Überspringen",
   "loading": "Wir verschlüsseln Alles und sind gleich wieder zurück!",
-  "holdUp": "Einen Moment!"
+  "holdUp": "Einen Moment!",
+  "password": "Passwort",
+  "unlockThisPassword": "Entsperre dieses Passwort",
+  "unlockNamedPassword": "Entsperre {passwordName}",
+  "@unlockNamedPassword": {
+    "description": "Text shown to unlock a password with a specific name",
+    "placeholders": {
+      "passwordName": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockWithPasswordButton": "Entsperren mit Password",
+  "orDividerText": "Oder",
+  "useBiometricsButton": "Nutze Biometrie"
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
+//TODO: Implement localization
+
 
 class SetPasswordView extends StatefulWidget {
   const SetPasswordView({super.key});

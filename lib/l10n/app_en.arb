@@ -30,5 +30,20 @@
   "useBiometrics": "Use Biometrics",
   "skip": "Skip",
   "loading": "Let us do some cryptography and we'll right back!",
-  "holdUp": "Hold up!"
+  "holdUp": "Hold up!",
+  "password": "Password",
+  "unlockThisPassword": "Unlock this password",
+  "unlockNamedPassword": "Unlock {passwordName}",
+  "@unlockNamedPassword": {
+    "description": "Text shown to unlock a password with a specific name",
+    "placeholders": {
+      "passwordName": {
+        "type": "String"
+      }
+    }
+  },
+  "password": "Password",
+  "unlockWithPasswordButton": "Unlock using password",
+  "orDividerText": "Or",
+  "useBiometricsButton": "Use biometrics"
 }
