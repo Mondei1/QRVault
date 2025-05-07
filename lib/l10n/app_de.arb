@@ -44,5 +44,11 @@
   },
   "unlockWithPasswordButton": "Entsperren mit Password",
   "orDividerText": "Oder",
-  "useBiometricsButton": "Nutze Biometrie"
+  "useBiometricsButton": "Nutze Biometrie",
+    "usernameLabel": "Nutzername",
+  "emailLabel": "Email",
+  "copyUsernameTooltip": "Kopiere Nutzername",
+  "copyEmailTooltip": "Kopiere Email",
+  "copyPasswordTooltip": "Kopiere Passwort",
+  "copiedToClipboard": "Zur Zwischenablage hinzugefügt!"
 }

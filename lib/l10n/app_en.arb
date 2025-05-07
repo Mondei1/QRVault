@@ -45,5 +45,11 @@
   "password": "Password",
   "unlockWithPasswordButton": "Unlock using password",
   "orDividerText": "Or",
-  "useBiometricsButton": "Use biometrics"
+  "useBiometricsButton": "Use biometrics",
+  "usernameLabel": "Username",
+  "emailLabel": "Email",
+  "copyUsernameTooltip": "Copy Username",
+  "copyEmailTooltip": "Copy Email",
+  "copyPasswordTooltip": "Copy Password",
+  "copiedToClipboard": "Copied to clipboard!"
 }
