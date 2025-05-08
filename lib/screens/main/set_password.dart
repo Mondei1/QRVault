@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
+import 'package:qrvault/screens/main/password_generator_screen.dart';
 //TODO: Implement localization
 
 
@@ -13,7 +14,6 @@ class SetPasswordView extends StatefulWidget {
 class _SetPasswordViewState extends State<SetPasswordView> {
   final _passwordController = TextEditingController();
   final _hintController = TextEditingController();
-  final bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -55,15 +55,27 @@ class _SetPasswordViewState extends State<SetPasswordView> {
               const SizedBox(height: 32),
               TextField(
                 controller: _passwordController,
-                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.casino_outlined), // mimicking dice icon
-                    onPressed: () {
-                      // TODO: Add password generator
-                    },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.casino),
+                        onPressed: () async {
+                          final String? generatedPassword = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                          );
+                          if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                          setState(() {
+                            _passwordController.text = generatedPassword;
+                          });
+                          }
+                        }
+                      ),
+                    ],
                   ),
                 ),
               ),

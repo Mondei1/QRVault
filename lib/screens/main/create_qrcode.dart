@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
-
+import 'package:qrvault/screens/main/password_generator_screen.dart';
 //TODO implement localisation
 
 class CreateScreenView extends StatefulWidget {
@@ -20,8 +20,6 @@ class _CreateScreenView extends State<CreateScreenView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _totpController = TextEditingController();
-
-  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -107,21 +105,29 @@ class _CreateScreenView extends State<CreateScreenView> {
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _passwordController,
-                  obscureText: !_isPasswordVisible,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     hintText: 'Secure Password',
                     border: const OutlineInputBorder(),
-                    suffixIcon: IconButton(
-                      icon: Icon(_isPasswordVisible
-                          ? Icons.visibility_off
-                          : Icons.visibility),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    ),
+                    suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.casino),
+                        onPressed: () async {
+                          final String? generatedPassword = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                          );
+                          if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                          setState(() {
+                            _passwordController.text = generatedPassword;
+                          });
+                          }
+                        }
+                      ),
+                    ],
+                  ),
                   ),
                 ),
                 const SizedBox(height: 24),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/screens/main/password_generator_screen.dart';
 
 class MasterPasswordSetupView extends StatefulWidget {
   const MasterPasswordSetupView({super.key});
@@ -64,13 +65,32 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.masterpassword,
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.casino),
+                        onPressed: () async {
+                          final String? generatedPassword = await Navigator.push<String>(
+                          context,
+                          MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                          );
+                          if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                          setState(() {
+                            _passwordController.text = generatedPassword;
+                          });
+                          }
+                        }
+                      ),
+                    ],
                   ),
                 ),
               ),

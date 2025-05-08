@@ -24,7 +24,7 @@
   "biometricsInfo": "You can use biometrics to protect your main password and make it easier to use. This is your default encryption method.",
   "biometricsSupport": "Your phone supports biometric authentication, which is great! You can use it to set a master password to speed up the creation and scanning process.",
   "passwordRequirements": "QRVault does not enforce password requirements – it is your responsibility.",
-  "passwordHint": "Stored unencrypted!",
+  "passwordHint": "Hint!",
   "storedUnencrypted": "Stored Unencrypted",
   "reinstallationInfo": "If you have reinstalled this app, you should use the same master password that you used before.",
   "useBiometrics": "Use Biometrics",

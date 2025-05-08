@@ -11,15 +11,16 @@ class PasswordGeneratorScreen extends StatefulWidget {
 
 class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
   final _passwordController = TextEditingController();
+  final Random _random = Random();
+  
   double _currentSliderValue = 12;
   final double _minPasswordLength = 8;
+  final double _maxPasswordLength = 32;
 
   bool _includeUppercase = true;
   bool _includeLowercase = true;
   bool _includeNumbers = true;
   bool _includeSymbols = true;
-
-  final Random _random = Random();
 
   @override
   void dispose() {
@@ -37,7 +38,7 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
     final allChars = '$uppercase$lowercase$numbers$symbols';
 
     if(allChars.isEmpty) {
-      return AppLocalizations.of(context)?.errorNoCharTypesSelected;
+      return AppLocalizations.of(context)?.errorNoCharTypesSelected ?? 'Select char types';
     }
 
     return List.generate(length, (_) => allChars[_random.nextInt(allChars.length)])
@@ -232,7 +233,12 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
             minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
-             //TODO: Implement "Use this" action
+            final password = _passwordController.text;
+
+            Navigator.pop(
+                context,
+                password
+            );
           },
         ),
       ),
