@@ -1,9 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
-//TODO implement localisation
 
 class CreateScreenView extends StatefulWidget {
   const CreateScreenView({super.key});
@@ -33,12 +33,14 @@ class _CreateScreenView extends State<CreateScreenView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: Text(
-          'Create QR-Code',
+          l10n.createQrCodeAppBarTitle,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         centerTitle: true,
@@ -61,8 +63,8 @@ class _CreateScreenView extends State<CreateScreenView> {
                 TextFormField(
                   controller: _titleController,
                   decoration: InputDecoration(
-                    labelText: 'Title',
-                    hintText: 'Title',
+                    labelText: l10n.titleFieldLabel,
+                    hintText: l10n.titleFieldHint,
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
@@ -72,15 +74,15 @@ class _CreateScreenView extends State<CreateScreenView> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Printed as a headline on the paper and plain inside the QR code.',
+                  l10n.titleFieldDescription,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
                   controller: _usernameController,
                   decoration: InputDecoration(
-                    labelText: 'Username',
-                    hintText: 'Username',
+                    labelText: l10n.usernameLabel,
+                    hintText: l10n.usernameFieldHint,
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
@@ -93,8 +95,8 @@ class _CreateScreenView extends State<CreateScreenView> {
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
-                    labelText: 'E-Mail',
-                    hintText: 'mail@example.com',
+                    labelText: l10n.emailLabel,
+                    hintText: l10n.emailFieldHint,
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
@@ -106,25 +108,28 @@ class _CreateScreenView extends State<CreateScreenView> {
                 TextFormField(
                   controller: _passwordController,
                   decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: 'Secure Password',
+                    labelText: l10n.passwordFieldLabel,
+                    hintText: l10n.passwordFieldHint,
                     border: const OutlineInputBorder(),
                     suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.casino),
-                        onPressed: () async {
-                          final String? generatedPassword = await Navigator.push<String>(
-                          context,
-                          MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
-                          );
-                          if (generatedPassword != null && generatedPassword.isNotEmpty) {
-                          setState(() {
-                            _passwordController.text = generatedPassword;
-                          });
+                      Tooltip(
+                        message: l10n.generatePasswordTooltip,
+                        child: IconButton(
+                          icon: const Icon(Icons.casino),
+                          onPressed: () async {
+                            final String? generatedPassword = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                            );
+                            if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                            setState(() {
+                              _passwordController.text = generatedPassword;
+                            });
+                            }
                           }
-                        }
+                        ),
                       ),
                     ],
                   ),
@@ -134,8 +139,8 @@ class _CreateScreenView extends State<CreateScreenView> {
                 TextFormField(
                   controller: _totpController,
                   decoration: InputDecoration(
-                    labelText: 'TOTP Secret',
-                    hintText: '32 byte secret',
+                    labelText: l10n.totpSecretFieldLabel,
+                    hintText: l10n.totpSecretFieldHint,
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.camera_alt_outlined),
@@ -159,7 +164,7 @@ class _CreateScreenView extends State<CreateScreenView> {
             top: 8.0),
         child: ElevatedButton.icon(
           icon: Icon(Icons.qr_code_scanner, color: Theme.of(context).colorScheme.onPrimary),
-          label: const Text('Generate'),
+          label: Text(l10n.generateButtonLabel),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,

@@ -63,5 +63,22 @@
   "numbers": "0-9",
   "symbols": "$&%@#+~",
   "useThis": "Verwenden",
-  "errorNoCharTypesSelected": "Wähle mindestens einen Zeichentyp aus"
+  "errorNoCharTypesSelected": "Wähle mindestens einen Zeichentyp aus",
+  "generatePasswordTooltip": "Passwort generieren",
+  "setPasswordAppBarTitle": "Passwort",
+  "setPasswordHeadline": "Passwort festlegen",
+  "setPasswordDescription": "Legen Sie das Verschlüsselungspasswort manuell fest, um diesen QR-Code zu schützen.",
+  "passwordFieldLabel": "Passwort",
+  "hintFieldLabel": "Hinweis",
+  "usePasswordButton": "Passwort verwenden",
+  "createQrCodeAppBarTitle": "QR-Code erstellen",
+  "titleFieldLabel": "Titel",
+  "titleFieldHint": "Titel",
+  "titleFieldDescription": "Wird als Überschrift auf dem Papier und unverschlüsselt im QR-Code gedruckt.",
+  "usernameFieldHint": "Benutzername",
+  "emailFieldHint": "mail@example.com",
+  "passwordFieldHint": "Sicheres Passwort",
+  "totpSecretFieldLabel": "TOTP-Geheimnis",
+  "totpSecretFieldHint": "32-Byte-Geheimnis",
+  "generateButtonLabel": "Generieren"
 }

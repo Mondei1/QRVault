@@ -76,19 +76,22 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                           });
                         },
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.casino),
-                        onPressed: () async {
-                          final String? generatedPassword = await Navigator.push<String>(
-                          context,
-                          MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
-                          );
-                          if (generatedPassword != null && generatedPassword.isNotEmpty) {
-                          setState(() {
-                            _passwordController.text = generatedPassword;
-                          });
+                      Tooltip(
+                        message: AppLocalizations.of(context)!.generatePasswordTooltip,
+                        child: IconButton(
+                          icon: const Icon(Icons.casino),
+                          onPressed: () async {
+                            final String? generatedPassword = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                            );
+                            if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                            setState(() {
+                              _passwordController.text = generatedPassword;
+                            });
+                            }
                           }
-                        }
+                        ),
                       ),
                     ],
                   ),
