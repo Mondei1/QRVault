@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/screens/main/password_generator_screen.dart';
 
 class MasterPasswordSetupView extends StatefulWidget {
   const MasterPasswordSetupView({super.key});
@@ -64,13 +65,35 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 decoration: InputDecoration(
                   labelText: AppLocalizations.of(context)!.masterpassword,
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                      Tooltip(
+                        message: AppLocalizations.of(context)!.generatePasswordTooltip,
+                        child: IconButton(
+                          icon: const Icon(Icons.casino),
+                          onPressed: () async {
+                            final String? generatedPassword = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                            );
+                            if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                            setState(() {
+                              _passwordController.text = generatedPassword;
+                            });
+                            }
+                          }
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -98,7 +121,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  AppLocalizations.of(context)!.storedUnencrpted,
+                  AppLocalizations.of(context)!.storedUnencrypted,
                   style: textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -118,7 +141,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      AppLocalizations.of(context).reinstallationInfo,
+                      AppLocalizations.of(context)!.reinstallationInfo,
                       style: textTheme.bodySmall,
                       textAlign: TextAlign.center,
                     ),
@@ -143,7 +166,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
           children: [
             ElevatedButton.icon(
               icon: Icon(Icons.fingerprint, color: colorScheme.onPrimary),
-              label: AppLocalizations.of(context)!.useBiometrics,
+              label: Text(AppLocalizations.of(context)!.useBiometrics),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
@@ -164,7 +187,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 textStyle: textTheme.titleMedium,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: AppLocalizations.of(context)!.skip,
+              child: Text(AppLocalizations.of(context)!.skip),
               onPressed: () {
                  //TODO: Implement Skip action
               },

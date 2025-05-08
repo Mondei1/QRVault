@@ -76,7 +76,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
           children: [
             ElevatedButton.icon(
               icon: Icon(Icons.fingerprint, color: colorScheme.onPrimary),
-              label: AppLocalizations.of(context)!.useBiometrics,
+              label: Text(AppLocalizations.of(context)!.useBiometrics),
               style: ElevatedButton.styleFrom(
                 backgroundColor: colorScheme.primary,
                 foregroundColor: colorScheme.onPrimary,
@@ -97,7 +97,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 textStyle: textTheme.titleMedium,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: AppLocalizations.of(context)!.skip,
+              child: Text(AppLocalizations.of(context)!.skip),
               onPressed: () {
                  //TODO: Implement Skip action
               },

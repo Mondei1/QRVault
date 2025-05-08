@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/routes.dart';
+import 'package:qrvault/screens/main/password_generator_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 
 class SetPasswordView extends StatefulWidget {
   const SetPasswordView({super.key});
@@ -11,7 +14,6 @@ class SetPasswordView extends StatefulWidget {
 class _SetPasswordViewState extends State<SetPasswordView> {
   final _passwordController = TextEditingController();
   final _hintController = TextEditingController();
-  final bool _isPasswordVisible = false;
 
   @override
   void dispose() {
@@ -22,11 +24,13 @@ class _SetPasswordViewState extends State<SetPasswordView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: const Text('Password'),
+        title: Text(l10n.setPasswordAppBarTitle),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -40,44 +44,59 @@ class _SetPasswordViewState extends State<SetPasswordView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                'Set password',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              Text(
+                l10n.setPasswordHeadline,
+                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              const Text(
-                'Set the encryption password manually to protect this QR code.',
+              Text(
+                l10n.setPasswordDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 32),
               TextField(
                 controller: _passwordController,
-                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.passwordFieldLabel,
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.casino_outlined), // mimicking dice icon
-                    onPressed: () {
-                      // TODO: Add password generator
-                    },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Tooltip(
+                        message: l10n.generatePasswordTooltip,
+                        child: IconButton(
+                          icon: const Icon(Icons.casino),
+                          onPressed: () async {
+                            final String? generatedPassword = await Navigator.push<String>(
+                            context,
+                            MaterialPageRoute(builder: (context) => const PasswordGeneratorScreen()),
+                            );
+                            if (generatedPassword != null && generatedPassword.isNotEmpty) {
+                            setState(() {
+                              _passwordController.text = generatedPassword;
+                            });
+                            }
+                          }
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'QRVault does not enforce password requirements – it is your responsibility.',
+              Text(
+                l10n.passwordRequirements,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.purple),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.primary),
               ),
               const SizedBox(height: 20),
-              Divider(indent: 20, endIndent: 20),
+              const Divider(indent: 20, endIndent: 20),
               const SizedBox(height: 20),
               TextField(
                 controller: _hintController,
                 decoration: InputDecoration(
-                  labelText: 'Hint',
+                  labelText: l10n.hintFieldLabel,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.clear),
@@ -86,9 +105,9 @@ class _SetPasswordViewState extends State<SetPasswordView> {
                 ),
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Stored unencrypted!',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              Text(
+                l10n.passwordHint,
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -103,7 +122,7 @@ class _SetPasswordViewState extends State<SetPasswordView> {
         ),
         child: ElevatedButton.icon(
           icon: Icon(Icons.password, color: Theme.of(context).colorScheme.onPrimary),
-          label: const Text('Use password'),
+          label: Text(l10n.usePasswordButton),
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
