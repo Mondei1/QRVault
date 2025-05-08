@@ -233,7 +233,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
                       value: _otpProgress,
                       backgroundColor: colorScheme.surfaceContainerHighest,
                       color: colorScheme.primary,
-                      minHeight: 6,
+                      minHeight: 3,
                       borderRadius: BorderRadius.circular(3),
                     ),
                     const SizedBox(height: 24),

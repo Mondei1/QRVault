@@ -42,7 +42,6 @@
       }
     }
   },
-  "password": "Password",
   "unlockWithPasswordButton": "Unlock using password",
   "orDividerText": "Or",
   "useBiometricsButton": "Use biometrics",
@@ -55,5 +54,14 @@
   "tfaTotpLabel": "2FA (TOTP)",
   "previousOtpLabelPrefix": "Prev:",
   "nextOtpLabelPrefix": "Next:",
-  "scannedScreenTitle": "Scanned Details"
+  "scannedScreenTitle": "Scanned Details",
+  "generator": "Generator",
+  "length": "Length",
+  "include": "Include",
+  "uppercaseLetters": "A-Z",
+  "lowercaseLetters": "a-z",
+  "numbers": "0-9",
+  "symbols": "$&%@#+~",
+  "useThis": "Use this",
+  "errorNoCharTypesSelected": "Select at least one char type"
 }

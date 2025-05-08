@@ -54,5 +54,14 @@
   "tfaTotpLabel": "2FA (TOTP)",
   "previousOtpLabelPrefix": "Vorh.:",
   "nextOtpLabelPrefix": "Näch.:",
-  "scannedScreenTitle": "Entschlüsselte Daten"
+  "scannedScreenTitle": "Entschlüsselte Daten",
+  "generator": "Generator",
+  "length": "Länge",
+  "include": "Zeichenauswahl",
+  "uppercaseLetters": "A-Z",
+  "lowercaseLetters": "a-z",
+  "numbers": "0-9",
+  "symbols": "$&%@#+~",
+  "useThis": "Verwenden",
+  "errorNoCharTypesSelected": "Wähle mindestens einen Zeichentyp aus"
 }
