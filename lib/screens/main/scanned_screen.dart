@@ -123,7 +123,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-             if (Navigator.canPop(context)) Navigator.pop(context);
+             Navigator.pop(context);
           },
         ),
         backgroundColor: colorScheme.surfaceContainerLowest,
