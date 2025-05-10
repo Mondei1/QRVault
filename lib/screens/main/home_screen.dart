@@ -27,16 +27,19 @@ class _HomeScreenViewState extends State<HomeScreenView> {
 
   void _handleBarcode(BarcodeCapture barcodes) {
     if (mounted) {
+      print("handle barcode");
       final barcode = barcodes.barcodes.firstOrNull;
-      if (barcode != null && barcode.displayValue != null && barcode.displayValue!.isNotEmpty) {
+      print("barcode: ${barcode?.displayValue}");
+      if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
         try {
           QrURI qrURI = QrURI.fromUriString(barcode.displayValue!);
+          print(qrURI.toUriString());
           Navigator.push<String>(
             context,
             MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
           );
         } catch (e) {
-          log(e.toString());
+          print(e.toString());
         }
       }
     }

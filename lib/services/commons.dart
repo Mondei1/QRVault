@@ -26,7 +26,13 @@ class QrURI {
       throw ArgumentError('Invalid URI scheme: Expected "qrv", got "${parsedUri.scheme}"');
     }
 
-    final List<String> segments = parsedUri.pathSegments;
+    final String path = uriString.substring(uriString.indexOf('://') + 3);
+    final List<String> segments = path.split('/').map((s) => Uri.decodeComponent(s)).toList();
+    
+    for (String segment in segments) {
+      print("segment: $segment");
+    }
+    
     if (segments.length != 4) {
       throw ArgumentError(
           'Invalid URI path: Expected 4 segments (title/salt/iv/content), got ${segments.length}');
