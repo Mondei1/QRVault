@@ -1,5 +1,5 @@
 import 'dart:core';
-import 'package:qr_vault/services/commons.dart';
+import 'package:qrvault/services/commons.dart';
 
 class DecryptionService {
     final QrURI uri;
@@ -10,9 +10,11 @@ class DecryptionService {
         required this.userPassword,
     });
 
+    /*
     Future<String> generateHash() async {
 
     Future<String> decryptV1() async {    
         
     }
+    */
 }

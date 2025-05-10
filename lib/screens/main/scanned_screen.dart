@@ -1,7 +1,7 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
-import 'package:qrvault/routes.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:totp/totp.dart';
 
@@ -57,7 +57,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
           _updateCodesAndProgress();
         });
       } catch (e) {
-        print("Error initializing TOTP: $e");
+        developer.log("Error initializing TOTP: $e");
       }
     }
   }
@@ -79,7 +79,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
   }
 
   void _updateCodesAndProgress() {
-    if (!mounted || widget.totp == null || widget.totp!.isEmpty || !(_totpGenerator != null) ) return;
+    if (!mounted || widget.totp == null || widget.totp!.isEmpty ) return;
 
     final now = DateTime.now();
     final current = _totpGenerator.generate(now);

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:qrvault/routes.dart';
-import 'package:qrvault/screens/main/set_password.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/services/commons.dart';
 
 class UnlockScreen extends StatefulWidget {
-  final String? passwordName;
-  final String? passwordHint;
+  final QrURI qrURI;
 
-  const UnlockScreen({super.key, this.passwordName, this.passwordHint});
+  const UnlockScreen({super.key, required this.qrURI});
 
   @override
   State<UnlockScreen> createState() => _UnlockScreenState();
@@ -42,7 +40,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
             children: [
               const Icon(Icons.lock, size: 100),
               Text(
-                widget.passwordName != null ? l10n.unlockNamedPassword(widget.passwordName!) : l10n.unlockThisPassword,
+                l10n.unlockNamedPassword(widget.qrURI.title),
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 32),
@@ -62,9 +60,9 @@ class _UnlockScreenState extends State<UnlockScreen> {
                   ),
                 ),
               ),
-              if (widget.passwordHint != null)
+              if (widget.qrURI.hint != null)
                 Text(
-                  '${widget.passwordHint}',
+                  '${widget.qrURI.hint}',
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               const SizedBox(height: 20),
