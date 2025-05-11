@@ -6,7 +6,7 @@ class QrURI {
   final String title;
   final String salt;
   final String iv;
-  String content;
+  final String content;
   final String? hint;
   final String version;
 
@@ -26,22 +26,22 @@ class QrURI {
       throw ArgumentError('Invalid URI scheme: Expected "qrv", got "${parsedUri.scheme}"');
     }
 
-    final String path = uriString.substring(uriString.indexOf('://') + 3);
-    final List<String> segments = path.split('/').map((s) => Uri.decodeComponent(s)).toList();
-    
-    for (String segment in segments) {
-      print("segment: $segment");
-    }
-    
-    if (segments.length != 4) {
-      throw ArgumentError(
-          'Invalid URI path: Expected 4 segments (title/salt/iv/content), got ${segments.length}');
+    final String title = parsedUri.host.replaceAll("%20", " ");
+
+    if (title.isEmpty && !uriString.startsWith("qrv:/")) {
+      throw ArgumentError('Title (host part of URI) is missing or empty. URI format should be: qrv://title/salt/iv/content');
     }
 
-    final String title = segments[0];
-    final String salt = segments[1];
-    final String iv = segments[2];
-    final String encryptedContentFromUri = segments[3];
+    final List<String> pathSegments = parsedUri.pathSegments;
+
+    if (pathSegments.length != 3) {
+      throw ArgumentError(
+          'Invalid URI path: Expected 3 segments after title (salt/iv/content), got ${pathSegments.length}. Segments found: $pathSegments');
+    }
+
+    final String salt = pathSegments[0];
+    final String iv = pathSegments[1];
+    final String contentFromUri = pathSegments[2];
 
     final Map<String, String> queryParams = parsedUri.queryParameters;
 
@@ -56,7 +56,7 @@ class QrURI {
       title: title,
       salt: salt,
       iv: iv,
-      content: encryptedContentFromUri,
+      content: contentFromUri,
       hint: hint,
       version: versionParam,
     );
@@ -66,20 +66,22 @@ class QrURI {
     final String encodedTitle = Uri.encodeComponent(title);
     final String encodedSalt = Uri.encodeComponent(salt);
     final String encodedIv = Uri.encodeComponent(iv);
-    final String encodedEncryptedContentForUri = Uri.encodeComponent(content);
-
+    final String encodedContentForUri = Uri.encodeComponent(content);
 
     final Map<String, String> queryParamsMap = {'v': version};
     if (hint != null && hint!.isNotEmpty) {
       queryParamsMap['h'] = hint!;
     }
 
-    String queryString = Uri(queryParameters: queryParamsMap).query;
-    if (queryString.isNotEmpty) {
-      queryString = "?$queryString";
+    String queryString = "";
+    if (queryParamsMap.isNotEmpty) {
+        queryString = Uri(queryParameters: queryParamsMap).query;
+        if (queryString.isNotEmpty) {
+            queryString = "?$queryString";
+        }
     }
 
-    return "qrv://$encodedTitle/$encodedSalt/$encodedIv/$encodedEncryptedContentForUri$queryString";
+    return "qrv://$encodedTitle/$encodedSalt/$encodedIv/$encodedContentForUri$queryString";
   }
 
   static Uint8List payloadToMessagePack(Map<String, dynamic> payload) {
@@ -103,6 +105,11 @@ class QrURI {
     }
     throw FormatException(
         'Deserialized MessagePack is not a Map. Type: ${deserialized.runtimeType}');
+  }
+
+  @override
+  String toString() {
+    return 'QrURI(title: $title, salt: $salt, iv: $iv, content (Base64): $content, hint: $hint, version: $version)';
   }
 }
 
@@ -140,14 +147,4 @@ class QrVaultPayload {
       notes: map['n'] as String?,
     );
   }
-}
-
-class Credentials {
-  final String? username;
-  final String? password;
-  final String? website;
-  final String? totp;
-  final String? notes;
-
-  Credentials({this.username, this.password, this.website, this.totp, this.notes});
 }

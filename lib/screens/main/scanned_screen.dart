@@ -4,15 +4,13 @@ import 'package:flutter/services.dart';
 import 'dart:async';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:totp/totp.dart';
+import 'package:qrvault/services/commons.dart';
 
 class ScannedScreen extends StatefulWidget {
-  final String? title;
-  final String? username;
-  final String? email;
-  final String? password;
-  final String? totp;
+  final QrVaultPayload payload;
+  final String title;
 
-  const ScannedScreen({super.key, this.title, this.username, this.email, this.password, this.totp});
+  const ScannedScreen({super.key, required this.payload, required this.title});
 
   @override
   State<ScannedScreen> createState() => _ScannedScreenState();
@@ -33,22 +31,22 @@ class _ScannedScreenState extends State<ScannedScreen> {
 
   @override
   void initState() {
-    super.initState();
-    if (widget.username != null) {
-      _usernameController.text = widget.username!;
+    super.initState();  
+    if (widget.payload.username != null) {
+      _usernameController.text = widget.payload.username!;
     }
-    if (widget.email != null) {
-      _emailController.text = widget.email!;
+    if (widget.payload.website != null) {
+      _emailController.text = widget.payload.website!;
     }
-    if (widget.password != null) {
-      _passwordController.text = widget.password!;
+    if (widget.payload.password != null) {
+      _passwordController.text = widget.payload.password!;
     }
 
-    if (widget.totp != null && widget.totp!.isNotEmpty) {
+    if (widget.payload.totpSecret != null && widget.payload.totpSecret!.isNotEmpty) {
       try {
         _totpGenerator = Totp(
           algorithm: Algorithm.sha1,
-          secret: widget.totp!.codeUnits,
+          secret: widget.payload.totpSecret!.codeUnits,
           digits: 6,
           period: 30,
         );
@@ -79,7 +77,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
   }
 
   void _updateCodesAndProgress() {
-    if (!mounted || widget.totp == null || widget.totp!.isEmpty ) return;
+    if (!mounted || widget.payload.totpSecret == null || widget.payload.totpSecret!.isEmpty ) return;
 
     final now = DateTime.now();
     final current = _totpGenerator.generate(now);
@@ -118,7 +116,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
 
     return Scaffold(
     appBar: AppBar(
-        title: Text(widget.title ?? l10n.scannedScreenTitle),
+        title: Text(widget.title),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -193,8 +191,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              if (widget.totp != null && widget.totp!.isNotEmpty && _currentOtp.isNotEmpty)
+              if (widget.payload.totpSecret != null && widget.payload.totpSecret!.isNotEmpty && _currentOtp.isNotEmpty)
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -238,7 +235,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
                     ),
                     const SizedBox(height: 24),
                   ],
-                ),     
+                ),   
             ],
           ),
         ),

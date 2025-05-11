@@ -117,7 +117,7 @@ rj0wgSRHFneoR%2Bfa%2FMGu1MvTUZAj2tqJmJThajBG%2BuG%2F8PDajLM8JPoMtkI9XNUwP3%2ByV7
 #### Final URI
 Based on this data, we can manually assemble our URI which is exactly what will be the QR-Code:
 ```url
-qrv://Example%20encryption/CBvacpfRWolfrypv/BlFKqLrQIMih0InU/J%2FORzsc1RBz95w3NMoLGGonrsZSxzIITnk%2FwkkgZm7wt6Y0vbQRpkphZBVAFdorrjldCSnoMlXQ9M2XcqD94BcxCZkYSABB0J7xu5NgBKYKx6sLB6w3sWOx7uvzeyDo1?h=The%20password%20is%20insecure&v=1
+qrv://Example%20encryption/CBvacpfRWolfrypv/BlFKqLrQIMih0InU/rj0wgSRHFneoR%2Bfa%2FMGu1MvTUZAj2tqJmJThajBG%2BuG%2F8PDajLM8JPoMtkI9XNUwP3%2ByV74uLVEa2eJ%2BDDE0PGRjhDEhdnRXOz2M9Mho0Zi6hjaLU9GrcsNg?h=The%20password%20is%20insecure&v=1
 ```
 
 #### Decryption
