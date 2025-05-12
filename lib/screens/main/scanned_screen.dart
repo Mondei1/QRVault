@@ -240,6 +240,34 @@ class _ScannedScreenState extends State<ScannedScreen> {
           ),
         ),
       ),
+      bottomNavigationBar:Padding(
+        padding: EdgeInsets.only(
+          left: 24.0,
+          right: 24.0,
+          bottom: MediaQuery.of(context).viewPadding.bottom + 16.0,
+          top: 8.0,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                foregroundColor: colorScheme.primary,
+                side: BorderSide(color: colorScheme.outline),
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                textStyle: textTheme.titleMedium,
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: Text(AppLocalizations.of(context)!.home),
+              onPressed: () {
+                int count = 0;  
+                Navigator.popUntil(context, (route) => count++ >= 2);
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

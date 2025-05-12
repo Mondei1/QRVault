@@ -2,8 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
+import 'package:qrvault/services/commons.dart';
+import 'package:qrvault/screens/main/set_password.dart';
 
 class CreateScreenView extends StatefulWidget {
   const CreateScreenView({super.key});
@@ -17,15 +18,16 @@ class _CreateScreenView extends State<CreateScreenView> {
 
   final _titleController = TextEditingController();
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _websiteController = TextEditingController();
   final _passwordController = TextEditingController();
   final _totpController = TextEditingController();
+  final _notesController = TextEditingController();
 
   @override
   void dispose() {
     _titleController.dispose();
     _usernameController.dispose();
-    _emailController.dispose();
+    _websiteController.dispose();
     _passwordController.dispose();
     _totpController.dispose();
     super.dispose();
@@ -47,7 +49,7 @@ class _CreateScreenView extends State<CreateScreenView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.home);
+            Navigator.pop(context);
           },
         ),
         elevation: 1,
@@ -92,15 +94,15 @@ class _CreateScreenView extends State<CreateScreenView> {
                 ),
                 const SizedBox(height: 24),
                 TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  controller: _websiteController,
+                  keyboardType: TextInputType.url,
                   decoration: InputDecoration(
-                    labelText: l10n.emailLabel,
-                    hintText: l10n.emailFieldHint,
+                    labelText: "Website",
+                    hintText: "Enter website URL",
                     border: const OutlineInputBorder(),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
-                      onPressed: () => _emailController.clear(),
+                      onPressed: () => _websiteController.clear(),
                     ),
                   ),
                 ),
@@ -151,6 +153,15 @@ class _CreateScreenView extends State<CreateScreenView> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 24),
+                TextFormField(
+                  controller: _notesController,
+                  decoration: InputDecoration(
+                    labelText: l10n.notesFieldLabel,
+                    hintText: l10n.notesFieldHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -176,7 +187,23 @@ class _CreateScreenView extends State<CreateScreenView> {
             minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
-            Navigator.pushNamed(context, AppRoutes.password);
+            final payload = QrVaultPayload(
+              username: _usernameController.text,
+              password: _passwordController.text,
+              website: _websiteController.text,
+              totpSecret: _totpController.text,
+              notes: _notesController.text,
+            );
+
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SetPasswordView(
+                  payload: payload,
+                  title: _titleController.text,
+                ),
+              ),
+            );
           },
         ),
       ),

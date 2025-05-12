@@ -1,6 +1,7 @@
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:qrvault/services/commons.dart';
-import 'package:qrvault/services/decryption.dart';
+import 'package:qrvault/services/crypto_service.dart';
 import 'package:qrvault/screens/main/scanned_screen.dart';
 
 //TODO: implment localization
@@ -39,7 +40,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     });
 
     try {
-      final decryptionService = DecryptionService(
+      final decryptionService = CryptoService.forDecryption(
         uri: widget.qrURI,
         userPassword: _passwordController.text,
       );
@@ -59,7 +60,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
       );
 
     } catch (e) {
-      print("Decryption error: $e");
+      log("Decryption error: $e");
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
