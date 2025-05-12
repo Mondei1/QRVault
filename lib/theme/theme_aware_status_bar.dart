@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,9 +6,9 @@ class ThemeAwareStatusBar extends StatefulWidget {
   final Widget child;
 
   const ThemeAwareStatusBar({
-    Key? key,
+    super.key,
     required this.child,
-  }) : super(key: key);
+  });
 
   @override
   State<ThemeAwareStatusBar> createState() => _ThemeAwareStatusBarState();

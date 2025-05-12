@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:qrvault/routes.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/services/commons.dart';
+import 'package:qrvault/services/crypto_service.dart';
+import 'dart:developer';
+import 'package:qrvault/services/qrcode_generator.dart';
 
 
 class SetPasswordView extends StatefulWidget {
-  const SetPasswordView({super.key});
+  final QrVaultPayload payload;
+  final String title;
+
+  const SetPasswordView({super.key, required this.payload, required this.title});
+  
 
   @override
   State<SetPasswordView> createState() => _SetPasswordViewState();
@@ -15,6 +22,7 @@ class _SetPasswordViewState extends State<SetPasswordView> {
   final _passwordController = TextEditingController();
   final _hintController = TextEditingController();
 
+ 
   @override
   void dispose() {
     _passwordController.dispose();
@@ -25,6 +33,9 @@ class _SetPasswordViewState extends State<SetPasswordView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +45,9 @@ class _SetPasswordViewState extends State<SetPasswordView> {
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.create)
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         elevation: 1,
       ),
@@ -133,8 +146,47 @@ class _SetPasswordViewState extends State<SetPasswordView> {
                 ?.copyWith(color: Theme.of(context).colorScheme.onPrimary),
             minimumSize: const Size(double.infinity, 50),
           ),
-          onPressed: () {
-            //TODO: Implement onPressedGenerate
+          onPressed: () async {
+            final String masterPassword = _passwordController.text;
+            final String? hint = _hintController.text.isNotEmpty ? _hintController.text : null;
+
+            if (masterPassword.isEmpty) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password cannot be empty'), 
+                  backgroundColor: Colors.red),
+                );
+              }
+              return;
+            }
+
+            final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+            final cryptoService = CryptoService();
+            try {
+              final QrURI generatedQrUri = await cryptoService.generateQrUri(
+                payload: widget.payload,
+                title: widget.title,
+                masterPassword: masterPassword,
+                hint: hint,
+              );
+             
+              await QrCodeGenerator.printQrCode(generatedQrUri.title, generatedQrUri.toUriString(), hint: generatedQrUri.hint);
+            } catch (e) {
+              log("Error generating QR URI in SetPasswordView: $e");
+              if (mounted) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(content: Text("Error creating QR URI: $e"),
+                  backgroundColor: Colors.red,
+                  )
+                );
+              }
+            }
+          
+            if (mounted) {
+              int count = 0;
+              Navigator.of(context).popUntil((_) => count++ >= 2);
+            }
           },
         ),
       ),

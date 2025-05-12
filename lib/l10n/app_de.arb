@@ -80,5 +80,8 @@
   "passwordFieldHint": "Sicheres Passwort",
   "totpSecretFieldLabel": "TOTP-Geheimnis",
   "totpSecretFieldHint": "32-Byte-Geheimnis",
-  "generateButtonLabel": "Generieren"
+  "generateButtonLabel": "Generieren",
+  "notesFieldLabel": "Notizen",
+  "notesFieldHint": "Notizen",
+  "home": "Startseite"
 }

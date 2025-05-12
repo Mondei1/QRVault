@@ -5,6 +5,7 @@ import 'package:qrvault/screens/main/language_settings_screen.dart';
 import 'package:qrvault/screens/main/set_password.dart';
 import 'package:qrvault/screens/onboarding/onboarding_screen.dart';
 import 'package:qrvault/screens/splash/splash_screen.dart';
+import 'package:qrvault/services/commons.dart';
 
 class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {
@@ -12,7 +13,10 @@ class AppRoutes {
     '/onboarding': (context) => OnboardingScreen(),
     '/home': (context) => HomeScreenView(),
     '/create': (context) => CreateScreenView(),
-    '/setPassword' : (context) => SetPasswordView(),
+    '/setPassword' : (context) => SetPasswordView(
+      payload: QrVaultPayload(),
+      title: '',
+    ),
     '/language': (context) => LanguageSettingsScreen(),
   };
   

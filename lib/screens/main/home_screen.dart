@@ -1,8 +1,10 @@
 import 'dart:developer';
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/routes.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:qrvault/screens/main/unlock_screen.dart';
+import 'package:qrvault/services/commons.dart';
 
 class HomeScreenView extends StatefulWidget {
   const HomeScreenView({super.key});
@@ -12,45 +14,32 @@ class HomeScreenView extends StatefulWidget {
 }
 
 class _HomeScreenViewState extends State<HomeScreenView> {
-  CameraController? _controller;
-  Future<void>? _initializeControllerFuture;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
-  }
-
-  Future<void> _initializeCamera() async {
-    try {
-      final cameras = await availableCameras();
-      if (cameras.isEmpty) {
-        log("No cameras available");
-        return;
-      }
-      final firstCamera = cameras.first;
-
-      _controller = CameraController(
-        firstCamera,
-        ResolutionPreset.medium,
-      );
-
-      _initializeControllerFuture = _controller!.initialize();
-      _initializeControllerFuture!.then((_) {
-        if (!mounted) {
-          return;
-        }
-        setState(() {});
-      });
-    } catch (e) {
-      log("Error initializing camera: $e");
-    }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
     super.dispose();
+  }
+
+  void _handleBarcode(BarcodeCapture barcodes) {
+    if (mounted) {
+      final barcode = barcodes.barcodes.firstOrNull;
+      if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
+        try {
+          QrURI qrURI = QrURI.fromUriString(barcode.displayValue!);
+          Navigator.push<String>(
+            context,
+            MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
+          );
+        } catch (e) {
+          log(e.toString());
+        }
+      }
+    }
   }
 
   @override
@@ -78,38 +67,10 @@ class _HomeScreenViewState extends State<HomeScreenView> {
       body: Column(
         children: [
           Expanded(
-            child: FutureBuilder<void>(
-              future: _initializeControllerFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    _controller != null &&
-                    _controller!.value.isInitialized) {
-
-                  var camera = _controller?.value;
-                  // fetch screen size
-                  final size = MediaQuery.of(context).size;
-
-                  // calculate scale depending on screen and camera ratios
-                  // this is actually size.aspectRatio / (1 / camera.aspectRatio)
-                  // because camera preview size is received as landscape
-                  // but we're calculating for portrait orientation
-                  var scale = size.aspectRatio * camera!.aspectRatio;
-
-                  // to prevent scaling down, invert the value
-                  if (scale < 1) scale = 1 / scale;
-
-                  return Transform.scale(
-                      scale: scale,
-                      child: Center(
-                        child: CameraPreview(_controller!),
-                      ));
-                } else if (snapshot.hasError) {
-                  return Center(
-                      child: Text(AppLocalizations.of(context)!.errorInitializingCamera('${snapshot.error}')));
-                } else {
-                  return const Center(child: CircularProgressIndicator());
-                }
-              },
+            child: Stack(
+              children: [
+                MobileScanner(onDetect: _handleBarcode),
+              ],
             ),
           ),
         ],
