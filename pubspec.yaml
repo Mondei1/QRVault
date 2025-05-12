@@ -44,6 +44,9 @@ dependencies:
   dynamic_color: ^1.7.0
   totp: ^0.1.0
   mobile_scanner: ^7.0.0
+  cryptography: ^2.7.0
+  qr_flutter: ^4.1.0
+  printing: ^5.14.2
 
 dev_dependencies:
   flutter_test:
