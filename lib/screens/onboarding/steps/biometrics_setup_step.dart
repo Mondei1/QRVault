@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class MasterPasswordSetupView extends StatefulWidget {
-  const MasterPasswordSetupView({super.key});
+class BiometricsSetupStepView extends StatefulWidget {
+  const BiometricsSetupStepView({super.key});
 
   @override
-  State<MasterPasswordSetupView> createState() => _MasterPasswordSetupViewState();
+  State<BiometricsSetupStepView> createState() => _BiometricsSetupStepViewState();
 }
 
-class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
+class _BiometricsSetupStepViewState extends State<BiometricsSetupStepView> {
 
   @override
   void dispose() {

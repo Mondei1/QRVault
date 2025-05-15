@@ -26,6 +26,7 @@ class QrURI {
       throw ArgumentError('Invalid URI scheme: Expected "qrv", got "${parsedUri.scheme}"');
     }
 
+    // TODO: Nah, use some proper URL decoding.
     final String title = parsedUri.host.replaceAll("%20", " ");
 
     if (title.isEmpty && !uriString.startsWith("qrv:/")) {

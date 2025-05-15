@@ -50,7 +50,7 @@ Let's visualize this using an example. This is basically exactly what QRVault do
 | Input | Value |
 | ----- | ----- |
 | User Password | `my_1nsecurePassw0rd` |
-| Content | [See MessagePack below](#what-is-in-the-encrypted-content) |
+| Content | [See MessagePack](#what-is-in-the-encrypted-content) |
 | Salt (generated) | `CBvacpfRWolfrypv` |
 | IV (generated) | `BlFKqLrQIMih0InU` |
 

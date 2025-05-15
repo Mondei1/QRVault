@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/config/shared_preferences_helper.dart';
 import 'package:qrvault/screens/main/home_screen.dart';
+import 'package:qrvault/screens/onboarding/steps/biometrics_setup_step.dart';
 import 'package:qrvault/screens/onboarding/steps/offline_storage_step.dart';
 import 'package:qrvault/screens/onboarding/steps/security_step.dart';
 import 'package:qrvault/screens/onboarding/steps/welcome_step.dart';
+import 'package:qrvault/services/native_calls.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -22,6 +24,21 @@ class OnboardingScreenState extends State<OnboardingScreen> {
     SecurityStepView(),
     // CompletionStep()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkSecureStorage();
+    });
+  }
+
+  Future<void> _checkSecureStorage() async {
+    if (await NativeCalls.hasSecureStorage()) {
+      _steps.add(BiometricsSetupStepView());
+    }
+  }
 
   void _completeOnboarding() async {
     await SharedPreferencesHelper.setFirstRunComplete();
