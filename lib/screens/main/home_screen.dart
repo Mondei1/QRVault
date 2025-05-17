@@ -36,6 +36,14 @@ class _HomeScreenViewState extends State<HomeScreenView> {
             MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
           );
         } catch (e) {
+          if(e.toString().contains('Invalid URI scheme')) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(AppLocalizations.of(context)!.invalidUri),
+                backgroundColor: Colors.red,                )
+              );
+            }
+          }
           log(e.toString());
         }
       }

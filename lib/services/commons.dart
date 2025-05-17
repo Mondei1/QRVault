@@ -23,10 +23,10 @@ class QrURI {
     final Uri parsedUri = Uri.parse(uriString);
 
     if (parsedUri.scheme != 'qrv') {
-      throw ArgumentError('Invalid URI scheme: Expected "qrv", got "${parsedUri.scheme}"');
+      throw ArgumentError('Invalid URI scheme');
     }
 
-    final String title = parsedUri.host.replaceAll("%20", " ");
+    final String title = Uri.decodeComponent(parsedUri.host);
 
     if (title.isEmpty && !uriString.startsWith("qrv:/")) {
       throw ArgumentError('Title (host part of URI) is missing or empty. URI format should be: qrv://title/salt/iv/content');

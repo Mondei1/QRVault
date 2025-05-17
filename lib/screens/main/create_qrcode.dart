@@ -187,6 +187,15 @@ class _CreateScreenView extends State<CreateScreenView> {
             minimumSize: const Size(double.infinity, 50),
           ),
           onPressed: () {
+            if (_passwordController.text.isEmpty) {
+              if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(AppLocalizations.of(context)!.providePassword),
+                backgroundColor: Colors.red,                )
+              );
+              }
+              return;
+            }
             final payload = QrVaultPayload(
               username: _usernameController.text,
               password: _passwordController.text,
