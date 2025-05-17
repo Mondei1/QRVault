@@ -7,17 +7,25 @@ import 'package:qrvault/screens/main/unlock_screen.dart';
 import 'package:qrvault/services/commons.dart';
 
 class HomeScreenView extends StatefulWidget {
-  const HomeScreenView({super.key});
+  final VoidCallback? onScreenCreated;
+
+  const HomeScreenView({super.key, this.onScreenCreated});
 
   @override
-  State<HomeScreenView> createState() => _HomeScreenViewState();
+  State<HomeScreenView> createState() => HomeScreenViewState();
 }
 
-class _HomeScreenViewState extends State<HomeScreenView> {
+class HomeScreenViewState extends State<HomeScreenView> {
+  final MobileScannerController mobilescannercontroller = MobileScannerController(detectionTimeoutMs: 1000, autoZoom: false);
+  
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onScreenCreated?.call();
+    });
   }
 
   @override
@@ -25,11 +33,22 @@ class _HomeScreenViewState extends State<HomeScreenView> {
     super.dispose();
   }
 
+  void controlScanner({required bool scanning}) {
+    if (mounted) {
+      if (!scanning) {
+        mobilescannercontroller.stop();
+      } else {
+        mobilescannercontroller.start();
+      }
+    }
+  }
+
   void _handleBarcode(BarcodeCapture barcodes) {
     if (mounted) {
       final barcode = barcodes.barcodes.firstOrNull;
       if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
         try {
+          controlScanner(scanning: false);
           QrURI qrURI = QrURI.fromUriString(barcode.displayValue!);
           Navigator.push<String>(
             context,
@@ -77,7 +96,9 @@ class _HomeScreenViewState extends State<HomeScreenView> {
           Expanded(
             child: Stack(
               children: [
-                MobileScanner(onDetect: _handleBarcode),
+                MobileScanner(
+                  controller: mobilescannercontroller,
+                  onDetect: _handleBarcode),
               ],
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/services/crypto_service.dart';
 import 'dart:developer';
 import 'package:qrvault/services/qrcode_generator.dart';
+import 'package:qrvault/routes.dart';
 
 
 class SetPasswordView extends StatefulWidget {
@@ -187,8 +188,11 @@ class _SetPasswordViewState extends State<SetPasswordView> {
             }
           
             if (mounted) {
-              int count = 0;
-              Navigator.of(context).popUntil((_) => count++ >= 3);
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                );
             }
           },
         ),
