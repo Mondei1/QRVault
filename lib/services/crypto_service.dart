@@ -51,12 +51,12 @@ class CryptoService {
         final saltBytesForArgon = utf8.encode(saltString);
         final ivBytesForAes = utf8.encode(ivString);
 
+        // TODO: Remove irrelevant check?
         if (ivBytesForAes.length != 16) {
             throw StateError('Generated IV has an incorrect length. Expected 16 bytes, got ${ivBytesForAes.length} bytes.');
         }
 
-        final encryptionKey = await _generateArgon2idKey(
-            password: masterPassword, saltBytes: saltBytesForArgon);
+        final encryptionKey = await _generateArgon2idKey(password: masterPassword, saltBytes: saltBytesForArgon);
 
         final messagePackBytes = QrURI.payloadToMessagePack(payload.toMap());
 
@@ -133,6 +133,8 @@ class CryptoService {
         if (uri == null || userPassword == null) {
             throw StateError('getDecryptedPayload called in invalid context.');
         }
+
+        // TODO: Make version 1 configurable somewhere.
         if (uri!.version != '1') {
             throw UnsupportedError('Unsupported QRVault protocol version: ${uri!.version}');
         }
