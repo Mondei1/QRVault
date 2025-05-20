@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
 import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/screens/main/set_password.dart';
+import 'package:qrvault/routes.dart';
 
 class CreateScreenView extends StatefulWidget {
   const CreateScreenView({super.key});
@@ -49,7 +50,13 @@ class _CreateScreenView extends State<CreateScreenView> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            if (mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                );
+            }
           },
         ),
         elevation: 1,

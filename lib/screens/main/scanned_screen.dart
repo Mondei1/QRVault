@@ -51,6 +51,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
           digits: 6,
           period: 30,
         );
+        
         _updateCodesAndProgress(); 
         _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           _updateCodesAndProgress();
