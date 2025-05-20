@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:totp/totp.dart';
 import 'package:qrvault/services/commons.dart';
+import 'package:qrvault/routes.dart';
 
 class ScannedScreen extends StatefulWidget {
   final QrVaultPayload payload;
@@ -50,6 +51,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
           digits: 6,
           period: 30,
         );
+        
         _updateCodesAndProgress(); 
         _otpTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
           _updateCodesAndProgress();
@@ -261,8 +263,11 @@ class _ScannedScreenState extends State<ScannedScreen> {
               ),
               child: Text(AppLocalizations.of(context)!.home),
               onPressed: () {
-                int count = 0;  
-                Navigator.popUntil(context, (route) => count++ >= 2);
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                );
               },
             ),
           ],

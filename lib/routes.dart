@@ -11,7 +11,10 @@ class AppRoutes {
   static final Map<String, WidgetBuilder> routes = {
     '/': (context) => SplashScreen(),
     '/onboarding': (context) => OnboardingScreen(),
-    '/home': (context) => HomeScreenView(),
+    '/home': (context) => HomeScreenView(onScreenCreated: () {
+      final state = context.findAncestorStateOfType<HomeScreenViewState>();
+      state?.controlScanner(scanning: true);
+    }),
     '/create': (context) => CreateScreenView(),
     '/setPassword' : (context) => SetPasswordView(
       payload: QrVaultPayload(),

@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/services/crypto_service.dart';
 import 'package:qrvault/screens/main/scanned_screen.dart';
-
-//TODO: implment localization
+import 'package:qrvault/screens/main/loading_screen.dart';
 
 class UnlockScreen extends StatefulWidget {
   final QrURI qrURI;
@@ -18,7 +18,6 @@ class UnlockScreen extends StatefulWidget {
 class _UnlockScreenState extends State<UnlockScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
-  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,15 +28,17 @@ class _UnlockScreenState extends State<UnlockScreen> {
   Future<void> _unlockAndNavigate() async {
     if (_passwordController.text.isEmpty) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a password')),
+        SnackBar(content: Text(l10n.enterPasswordMessage)),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    Navigator.push(context, 
+      MaterialPageRoute(builder: (context) => const LoadingView())
+    );
 
     try {
       final decryptionService = CryptoService.forDecryption(
@@ -49,6 +50,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
       if (!mounted) return;
 
+      Navigator.pop(context);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -62,18 +64,14 @@ class _UnlockScreenState extends State<UnlockScreen> {
     } catch (e) {
       log("Decryption error: $e");
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Decryption failed: ${e.toString()}'),
+          content: Text(l10n.decryptionFailedMessage),
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
@@ -82,6 +80,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Center(
@@ -94,7 +93,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
               const Icon(Icons.lock, size: 100),
               const SizedBox(height: 8),
               Text(
-                'Unlock ${widget.qrURI.title}',
+                l10n.unlockScreenTitle(widget.qrURI.title),
                 style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
@@ -103,7 +102,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 controller: _passwordController,
                 obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
-                  labelText: 'Password',
+                  labelText: l10n.password,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
@@ -114,37 +113,30 @@ class _UnlockScreenState extends State<UnlockScreen> {
                     },
                   ),
                 ),
-                onSubmitted: (_) {
-                  if (!_isLoading) {
-                    _unlockAndNavigate();
-                  }
-                },
               ),
               const SizedBox(height: 8),
               if (widget.qrURI.hint != null && widget.qrURI.hint!.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Text(
-                    "Hint: ${widget.qrURI.hint!}",
+                    l10n.passwordHintText(widget.qrURI.hint!),
                     style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ),
               const SizedBox(height: 20),
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton.icon(
-                      icon: Icon(Icons.lock_open, color: colorScheme.onPrimary),
-                      label: const Text('Unlock'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                        textStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      onPressed: _unlockAndNavigate,
-                    ),
+              ElevatedButton.icon(
+                icon: Icon(Icons.lock_open, color: colorScheme.onPrimary),
+                label: Text(l10n.unlockButton),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: colorScheme.primary,
+                foregroundColor: colorScheme.onPrimary,
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                textStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
+                minimumSize: const Size(double.infinity, 50),
+                ),
+               onPressed: _unlockAndNavigate,
+              ),
             ],
           ),
         ),
@@ -164,7 +156,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 const Expanded(child: Divider(endIndent: 10)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text('OR', style: textTheme.labelSmall),
+                  child: Text(l10n.orDividerText, style: textTheme.labelSmall),
                 ),
                 const Expanded(child: Divider(indent: 10)),
               ],
@@ -178,13 +170,8 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 textStyle: textTheme.titleMedium,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text('Use Biometrics'),
+              child: Text(l10n.useBiometricsButton),
               onPressed: () {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Biometrics not implemented yet')),
-                  );
-                }
                 // TODO: Implement biometrics
               },
             ),

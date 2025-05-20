@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
+import 'package:qrvault/screens/main/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/services/crypto_service.dart';
 import 'dart:developer';
 import 'package:qrvault/services/qrcode_generator.dart';
+import 'package:qrvault/routes.dart';
 
 
 class SetPasswordView extends StatefulWidget {
@@ -147,6 +149,11 @@ class _SetPasswordViewState extends State<SetPasswordView> {
             final String masterPassword = _passwordController.text;
             final String? hint = _hintController.text.isNotEmpty ? _hintController.text : null;
 
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const LoadingView()),
+            );
+
             if (masterPassword.isEmpty) {
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -168,7 +175,7 @@ class _SetPasswordViewState extends State<SetPasswordView> {
                 hint: hint,
               );
              
-              await QrCodeGenerator.printQrCode(generatedQrUri.title, generatedQrUri.toUriString(), hint: generatedQrUri.hint);
+              await QrCodeGenerator.printQrCode(context, generatedQrUri.title, generatedQrUri.toUriString(), hint: generatedQrUri.hint);
             } catch (e) {
               log("Error generating QR URI in SetPasswordView: $e");
               if (mounted) {
@@ -181,8 +188,11 @@ class _SetPasswordViewState extends State<SetPasswordView> {
             }
           
             if (mounted) {
-              int count = 0;
-              Navigator.of(context).popUntil((_) => count++ >= 2);
+              Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  AppRoutes.home,
+                  (route) => false,
+                );
             }
           },
         ),

@@ -83,5 +83,18 @@
   "generateButtonLabel": "Generieren",
   "notesFieldLabel": "Notizen",
   "notesFieldHint": "Notizen",
-  "home": "Startseite"
+  "home": "Startseite",
+  "qrCodeGenerator": "QR-Code-Generator",
+  "qrCodePrinting": "QR-Code-Drucken",
+  "qrCodePrintingError": "Fehler beim Generieren des QR-Codes zum Drucken",
+  "qrCodeGeneratedBy": "Erstellt mit QRVault",
+  "qrCodeHint": "Hinweis: {hint}",
+  "unlockScreenTitle": "{title} entsperren",
+  "enterPasswordMessage": "Bitte geben Sie ein Passwort ein",
+  "decryptionFailedMessage": "Entschlüsselung fehlgeschlagen: Sie haben ein ungültiges Passwort eingegeben!",
+  "unlockButton": "Entsperren",
+  "passwordHintText": "Hinweis: {hint}",
+  "biometricsNotImplementedMessage": "Biometrie noch nicht implementiert",
+  "invalidUri": "Dieser QR-Code wurde nicht von QRVault erstellt!",
+  "providePassword": "Bitte gebe ein Passwort ein!"
 }
