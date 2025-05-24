@@ -86,6 +86,7 @@ class HomeScreenViewState extends State<HomeScreenView> {
           IconButton(
             icon: const Icon(Icons.language),
             onPressed: () {
+              controlScanner(scanning: false);
               Navigator.pushNamed(context, AppRoutes.language);
             },
           ),
@@ -109,6 +110,7 @@ class HomeScreenViewState extends State<HomeScreenView> {
         padding: const EdgeInsets.only(bottom: 30.0),
         child: FloatingActionButton.extended(
           onPressed: () {
+          controlScanner(scanning: false);
            Navigator.pushNamed(context, AppRoutes.create);
           },
           icon: const Icon(Icons.add_circle_outline),

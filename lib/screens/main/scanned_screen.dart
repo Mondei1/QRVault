@@ -45,9 +45,9 @@ class _ScannedScreenState extends State<ScannedScreen> {
 
     if (widget.payload.totpSecret != null && widget.payload.totpSecret!.isNotEmpty) {
       try {
-        _totpGenerator = Totp(
+        _totpGenerator = Totp.fromBase32(
           algorithm: Algorithm.sha1,
-          secret: widget.payload.totpSecret!.codeUnits,
+          secret: widget.payload.totpSecret!,
           digits: 6,
           period: 30,
         );
