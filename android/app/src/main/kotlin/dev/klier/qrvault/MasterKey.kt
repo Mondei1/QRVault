@@ -1,28 +1,33 @@
 package dev.klier.qrvault
 
-import android.R.attr.data
-import android.R.attr.key
 import android.app.KeyguardManager
 import android.content.Context
-import android.hardware.biometrics.BiometricManager
-import android.hardware.biometrics.BiometricManager.Authenticators
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.security.KeyStore
 import java.util.logging.Logger
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
+import kotlin.coroutines.resume
 
 
 /**
  * This is our Android-specific crypto implementation to securely seal and unseal the master key.
  *
  * The master key is unsealed using these steps:
- * 1. Take the user entered master password and hash it (done by Flutter)
+ * 1. Take the user's raw entered master password, not the hash - **this is the master key**.
  * 2. If not existing, generate a new random AES key in hardware (if available). This random AES key
- *    can be retrieved after the user provided their PIN or biometrics.
+ *    can be retrieved after the user provided their PIN or biometrics. - **this is the device key**.
  * 3. Use this random AES key to encrypt/decrypt a file in private storage which stores the hash
  *    from step 1)
  *
@@ -41,7 +46,7 @@ class MasterKey(private val context: Context) {
     }
 
     private val keyguardManager = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-    private val biometricManager = context.getSystemService(Context.BIOMETRIC_SERVICE) as BiometricManager
+    private val biometricManager = context.getSystemService(Context.BIOMETRIC_SERVICE) as android.hardware.biometrics.BiometricManager
     private val keyStore = KeyStore.getInstance(ANDROID_KEY_STORE)
     private val logger = Logger.getLogger(MasterKey::class.simpleName.toString())
 
@@ -50,18 +55,19 @@ class MasterKey(private val context: Context) {
     }
 
     /**
-     * This file contains the hash (therefore actual encryption key) used to protect our QR codes.
+     * This file contains the user password used to protect our QR codes but encrypted.
      */
     private val keyFile = File(context.filesDir, "masterkey.bin")
 
     /**
-     * Returns `true` if the Android device has a lock-screen. This is required to use the KeyStore.
+     * Returns `true` if the Android device has a lock-screen and has a biometric authentication set
+     * up. This is required to use the KeyStore and therefore this feature.
      */
     fun hasSecureStorage(): Boolean {
         return keyguardManager.isDeviceSecure
                 && biometricManager.canAuthenticate(
-            Authenticators.BIOMETRIC_STRONG or Authenticators.DEVICE_CREDENTIAL
-                ) == BiometricManager.BIOMETRIC_SUCCESS
+            android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG or android.hardware.biometrics.BiometricManager.Authenticators.DEVICE_CREDENTIAL
+                ) == android.hardware.biometrics.BiometricManager.BIOMETRIC_SUCCESS
     }
 
     /**
@@ -82,10 +88,10 @@ class MasterKey(private val context: Context) {
      * Enroll a new protection key for the masterkey.bin file.
      * @return False if the operation failed.
      */
-    fun enrollDeviceKey(): Boolean {
+    private fun enrollDeviceKey(): Boolean {
         if (hasDeviceKey()) {
             // This shouldn't happen. The user must explicitly delete the current one.
-            logger.warning("Tried to enroll new master key while a master key already exists.")
+            logger.warning("Tried to enroll new device key while a device key already exists.")
             return false
         }
 
@@ -101,7 +107,7 @@ class MasterKey(private val context: Context) {
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                 // TODO: Is `false` okay here? Theoretically, we want control over the IV but we could
                 //       enforce Android to create one for us.
-                .setRandomizedEncryptionRequired(false)
+                .setRandomizedEncryptionRequired(true)
                 // Force user authentication in general for access
                 .setUserAuthenticationRequired(true)
                 // Force user authentication on every use (e. g. for every en-/and decryption attempt)
@@ -127,37 +133,161 @@ class MasterKey(private val context: Context) {
      * device's enrolled AES key.
      * @param userSecret "Content" of the new file which MUST be a 32 byte Argon2id hash.
      */
-    fun encryptMasterKey(userSecret: ByteArray): Boolean {
-        if (!hasSecureStorage() || !hasDeviceKey()) {
-            logger.severe("Cannot encrypt master key without enrolled device secret.")
-            return false
+    suspend fun enrollMasterKey(activity: FragmentActivity, userSecret: String): Boolean = withContext(Dispatchers.IO) {
+        if (!hasSecureStorage()) {
+            logger.severe("This device has no secure storage. A master key cannot be safely stored on this device.")
+            return@withContext false
         }
 
-        if (!keyFile.createNewFile()) {
-            logger.warning("A master key is already set. The old one will be overridden!")
+        if (!hasDeviceKey()) {
+            logger.severe("No device secret enrolled yet. Start enrolling process ...")
+            if (!enrollDeviceKey()) {
+                logger.severe("Device secret failed to enroll. Cannot proceed further.")
+                return@withContext false
+            }
+        }
+
+        try {
+            if (!keyFile.createNewFile()) {
+                logger.warning("A master key is already set. The old one will be overridden!")
+            }
+        } catch (e: IOException) {
+            logger.severe("Failed to create new key file: ${e.message}")
+            return@withContext false
         }
 
         if (!keyFile.canWrite()) {
             logger.severe("Cannot write into master key file due to missing write permissions.")
-            return false
-        }
-
-        if (userSecret.size != 32) {
-            logger.severe("Tried to store a ${userSecret.size} byte value but 32 bytes were expected.")
-            return false
+            return@withContext false
         }
 
         val deviceSecret = keyStore.getKey(KEY_ALIAS, null) as SecretKey
-
         val cipher = Cipher.getInstance(CIPHER_MODE)
         cipher.init(Cipher.ENCRYPT_MODE, deviceSecret)
+        val userKeyBinary = userSecret.toByteArray()
 
-        val encryptedData = cipher.doFinal(userSecret)
+        val authResult = withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { continuation ->
+                authenticate(activity, cipher,
+                    onSuccess = {
+                        continuation.resume(true)
+                    },
+                    onError = {
+                        continuation.resume(false)
+                    }
+                )
 
-        keyFile.outputStream().use {
-            it.write(encryptedData)
+                continuation.invokeOnCancellation {
+                    logger.warning("Authentication dialogue cancelled.")
+                    continuation.resume(false)
+                }
+            }
         }
 
-        return true
+        if (authResult) {
+            try {
+                val encryptedData = cipher.doFinal(userKeyBinary)
+                keyFile.outputStream().use { it.write(encryptedData) }
+                return@withContext true
+            } catch (e: Exception) {
+                logger.severe("Master key file couldn't be written: ${e.message}")
+                return@withContext false
+            }
+        } else {
+            return@withContext false
+        }
+    }
+
+    suspend fun retrieveMasterKey(activity: FragmentActivity): String? = withContext(Dispatchers.IO) {
+        if (!hasSecureStorage()) {
+            logger.severe("This device has no secure storage. A master key cannot be retrieved.")
+            return@withContext null
+        }
+
+        if (!hasDeviceKey()) {
+            logger.severe("No device secret enrolled yet. A master key can therefore not be retrieved.")
+            return@withContext null
+        }
+
+        if (!keyFile.canRead()) {
+            logger.severe("Cannot read into master key file due to missing read permissions.")
+            return@withContext null
+        }
+
+        val encryptedMasterKey = keyFile.readBytes();
+
+        val deviceSecret = keyStore.getKey(KEY_ALIAS, null) as SecretKey
+        val cipher = Cipher.getInstance(CIPHER_MODE)
+        cipher.init(Cipher.DECRYPT_MODE, deviceSecret)
+
+        val authResult = withContext(Dispatchers.Main) {
+            suspendCancellableCoroutine { continuation ->
+                authenticate(activity, cipher,
+                    onSuccess = {
+                        continuation.resume(true)
+                    },
+                    onError = {
+                        continuation.resume(false)
+                    }
+                )
+
+                continuation.invokeOnCancellation {
+                    logger.warning("Authentication dialogue cancelled.")
+                    continuation.resume(false)
+                }
+            }
+        }
+
+        if (authResult) {
+            try {
+                val decryptedMasterKey = cipher.doFinal(encryptedMasterKey)
+
+                val userKey = decryptedMasterKey.decodeToString()
+                return@withContext userKey
+            } catch (e: Exception) {
+                logger.severe("Master key file couldn't be written: ${e.message}")
+                return@withContext null
+            }
+        } else {
+            return@withContext null
+        }
+
+        return@withContext ""
+    }
+    /**
+     * This opens the Android dialogue where the user has to authenticate.
+     * @param cipher This must be the cipher instance that will encrypt or decrypt the master key
+     * file right after this authentication.
+     */
+    private fun authenticate(activity: FragmentActivity, cipher: Cipher, onSuccess: (BiometricPrompt.AuthenticationResult) -> Unit, onError: () -> Unit) {
+        val executor = ContextCompat.getMainExecutor(activity)
+
+        val biometricPrompt = BiometricPrompt(activity, executor,
+            object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    onError()
+                }
+
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    onSuccess(result)
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                    onError()
+                }
+            })
+
+
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Set master password")
+            .setSubtitle("Authenticate to store your master password securely.")
+            .setDescription("This will allow QRVault to securely encrypt your master key on your smartphone.")
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
     }
 }

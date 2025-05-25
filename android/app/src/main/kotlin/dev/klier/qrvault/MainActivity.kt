@@ -1,22 +1,27 @@
 package dev.klier.qrvault
 
 import android.os.Build
-import io.flutter.embedding.android.FlutterActivity
+import android.os.Bundle
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
-import java.security.KeyStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Locale
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     companion object {
         private val CHANNEL_LANGUAGE = "dev.klier.qrvault/language"
         private val CHANNEL_CRYPTO = "dev.klier.qrvault/crypto"
     }
 
-    private val masterKey: MasterKey
+    private lateinit var masterKey: MasterKey
 
-    init {
-        masterKey = MasterKey(context)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        this.masterKey = MasterKey(this)
     }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -28,10 +33,22 @@ class MainActivity : FlutterActivity() {
                     result.success(masterKey.hasSecureStorage())
                 }
                 "hasMasterKey" -> {
-                    result.success(masterKey.hasDeviceKey())
+                    result.success(masterKey.hasKeyFile())
                 }
-                "encryptMasterKey" -> {
-
+                "enrollMasterKey" -> {
+                    call.argument<String>("userSecret")?.let { userSecret ->
+                        // We must call a coroutine in order to use suspend (aka async) functions. Weird.
+                        CoroutineScope(Dispatchers.Main.immediate).launch {
+                            val re = masterKey.enrollMasterKey(this@MainActivity, userSecret)
+                            result.success(re)
+                        }
+                    }
+                }
+                "retrieveMasterKey" -> {
+                    CoroutineScope(Dispatchers.Main.immediate).launch {
+                        val re = masterKey.retrieveMasterKey(this@MainActivity)
+                        result.success(re)
+                    }
                 }
                 else -> {
                     result.notImplemented()
@@ -44,7 +61,7 @@ class MainActivity : FlutterActivity() {
                 "getAppLocale" -> {
                     // Get the app-specific locale if available (Android 13+)
                     val locale = if (Build.VERSION.SDK_INT >= 33) {
-                        context.resources.configuration.locales[0]
+                        this.resources.configuration.locales[0]
                     } else {
                         Locale.getDefault()
                     }

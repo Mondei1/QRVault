@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
+import 'package:qrvault/services/native_calls.dart';
 
 class MasterPasswordSetupView extends StatefulWidget {
   const MasterPasswordSetupView({super.key});
@@ -19,6 +21,20 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
     _passwordController.dispose();
     _hintController.dispose();
     super.dispose();
+  }
+
+  /// This will enroll a master key on the Android device.
+  void enrollMasterPassword() async {
+    var enrollResult = await NativeCalls.enrollMasterKey(_passwordController.text);
+
+    if (enrollResult && mounted) {
+      _showMasterPasswordError(context);
+      return;
+    }
+
+    // Navigate the user to the home screen since this is the last optional step.
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (_) => HomeScreenView()));
   }
 
   @override
@@ -126,28 +142,28 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 ),
               ),
               const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: colorScheme.outlineVariant),
-                  borderRadius: BorderRadius.circular(8.0),
+              DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                color: Theme.of(context).colorScheme.secondary.withAlpha(25),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: Row(
                   children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Icon(Icons.info_outline, color: colorScheme.secondary),
+                    Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Icon(Icons.info),
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      AppLocalizations.of(context)!.reinstallationInfo,
-                      style: textTheme.bodySmall,
-                      textAlign: TextAlign.center,
-                    ),
+                    Flexible(
+                        child: Text(
+                            AppLocalizations.of(context)!.reinstallationInfo))
                   ],
                 ),
-              ),
+              )),
               const SizedBox(height: 24),
             ],
           ),
@@ -174,27 +190,48 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
                 textStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
                 minimumSize: const Size(double.infinity, 50),
               ),
-              onPressed: () {
-                 //TODO: Implement Use Biometrics action
-              },
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.primary,
-                side: BorderSide(color: colorScheme.outline),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                textStyle: textTheme.titleMedium,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: Text(AppLocalizations.of(context)!.skip),
-              onPressed: () {
-                 //TODO: Implement Skip action
-              },
-            ),
+              onPressed: () => enrollMasterPassword(),
+            )
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showMasterPasswordError(BuildContext context) {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Error"),
+          content: const Text(
+            // TODO: Translate
+            "There was an error setting your master password. Try again or continue without one.",
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge),
+              child: const Text("Try again"),
+              onPressed: () {
+                // Close dialogue
+                Navigator.of(context, rootNavigator: true).pop(null);
+                enrollMasterPassword();
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge),
+              child: const Text("Skip"),
+              onPressed: () {
+                // Navigate the user to the home screen since this is the last optional step.
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (_) => HomeScreenView()));
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

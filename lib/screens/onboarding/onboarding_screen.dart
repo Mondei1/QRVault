@@ -28,7 +28,7 @@ class OnboardingScreenState extends State<OnboardingScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkSecureStorage();
     });
@@ -36,15 +36,16 @@ class OnboardingScreenState extends State<OnboardingScreen> {
 
   Future<void> _checkSecureStorage() async {
     if (await NativeCalls.hasSecureStorage()) {
+      // If this device supports secure storage, allow the user to set it up.
       _steps.add(BiometricsSetupStepView());
     }
   }
 
   void _completeOnboarding() async {
     await SharedPreferencesHelper.setFirstRunComplete();
-    if(mounted){
+    if (mounted) {
       Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (_) => HomeScreenView()));
+          context, MaterialPageRoute(builder: (_) => HomeScreenView()));
     }
   }
 
@@ -102,7 +103,10 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                         shape: BoxShape.circle,
                         color: _currentPage == index
                             ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                            : Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.3),
                       ),
                     ),
                   ),
@@ -111,20 +115,25 @@ class OnboardingScreenState extends State<OnboardingScreen> {
             // Navigation buttons
             if (_steps.length > 1)
               Padding(
-                padding: const EdgeInsets.only(bottom: 20.0, left: 20.0, right: 20.0),
+                padding: const EdgeInsets.only(
+                    bottom: 20.0, left: 20.0, right: 20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (_currentPage > 0)
                       TextButton(
                         onPressed: _previousPage,
-                        child: Text('Back'),
+                        child: Text("Zurück"),
                       )
                     else
                       const SizedBox(width: 80),
                     FilledButton(
                       onPressed: _nextPage,
-                      child: Text(_currentPage < _steps.length - 1 ? 'Next' : 'Finish'),
+                      child: Text(_currentPage < _steps.length - 1
+                          ? "Next"
+                          : (_currentPage == 3)
+                              ? "Überspringen"
+                              : "Finish"),
                     ),
                   ],
                 ),

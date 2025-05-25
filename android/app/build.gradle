@@ -30,6 +30,10 @@ android {
         versionName = flutter.versionName
     }
 
+    dependencies {
+        implementation("androidx.biometric:biometric:1.4.0-alpha02")
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -41,4 +45,7 @@ android {
 
 flutter {
     source = "../.."
+}
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
 }

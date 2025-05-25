@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-
 class SecurityStepView extends StatelessWidget {
   const SecurityStepView({super.key});
 
@@ -96,8 +95,8 @@ class SecurityStepView extends StatelessWidget {
                       child: Icon(Icons.info),
                     ),
                     Flexible(
-                        child: Text(
-                            AppLocalizations.of(context)!.encryptionInfo))
+                        child:
+                            Text(AppLocalizations.of(context)!.encryptionInfo))
                   ],
                 ),
               ))

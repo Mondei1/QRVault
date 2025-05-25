@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/screens/onboarding/steps/master_password_setup_view.dart';
 
 class BiometricsSetupStepView extends StatefulWidget {
   const BiometricsSetupStepView({super.key});
@@ -85,23 +86,9 @@ class _BiometricsSetupStepViewState extends State<BiometricsSetupStepView> {
                 minimumSize: const Size(double.infinity, 50),
               ),
               onPressed: () {
-                 //TODO: Implement Use Biometrics action
+                 Navigator.push(context, MaterialPageRoute(builder: (_) => MasterPasswordSetupView()));
               },
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.primary,
-                side: BorderSide(color: colorScheme.outline),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                textStyle: textTheme.titleMedium,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: Text(AppLocalizations.of(context)!.skip),
-              onPressed: () {
-                 //TODO: Implement Skip action
-              },
-            ),
+            )
           ],
         ),
       ),

@@ -19,4 +19,31 @@ class NativeCalls {
       return false;
     }
   }
+
+  static Future<bool> hasMasterKey() async {
+    if (kIsWeb || kIsWasm) {
+      // Secure storage is not available in web :(
+      return false;
+    }
+
+    try {
+      return await _platform.invokeMethod<bool>("hasMasterKey") ?? false;
+    } on PlatformException catch (e) {
+      log("Cannot check if a master key is already enrolled. Assume false. Error: $e");
+      return false;
+    }
+  }
+
+  static Future<bool> enrollMasterKey(String userSecret) async {
+    if (kIsWeb || kIsWasm) {
+      // Secure storage is not available in web :(
+      return false;
+    }
+    try {
+      return await _platform.invokeMethod<bool>("enrollMasterKey", { "userSecret": userSecret }) ?? false;
+    } on PlatformException catch (e) {
+      log("Cannot check if a master key is already enrolled. Assume false. Error: $e");
+      return false;
+    }
+  }
 }
