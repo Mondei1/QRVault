@@ -111,7 +111,7 @@ class _CreateScreenView extends State<CreateScreenView> {
 
     final payload = QrVaultPayload(
       username: _usernameController.text,
-      password: masterKeyWithHint.$1,
+      password: _passwordController.text,
       website: _websiteController.text,
       totpSecret: _totpController.text,
       notes: _notesController.text,

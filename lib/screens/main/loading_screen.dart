@@ -62,6 +62,14 @@ class _LoadingView extends State<LoadingView> {
       );
       
       await QrCodeGenerator.printQrCode(context, generatedQrUri.title, generatedQrUri.toUriString(), hint: generatedQrUri.hint);
+
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.home,
+          (route) => false,
+        );
+      }
     } catch (e) {
       log("Error generating QR URI in SetPasswordView: $e");
 
@@ -73,14 +81,6 @@ class _LoadingView extends State<LoadingView> {
           )
         );
       }
-    }
-
-    if (mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.home,
-        (route) => false,
-      );
     }
   }
 
@@ -106,6 +106,14 @@ class _LoadingView extends State<LoadingView> {
           ),
         ),
       );
+
+      // if (mounted) {
+      //   Navigator.pushNamedAndRemoveUntil(
+      //     context,
+      //     AppRoutes.home,
+      //     (route) => false,
+      //   );
+      // }
     } catch (e) {
       log("Decryption error: $e");
       if (!mounted) return;
@@ -118,13 +126,7 @@ class _LoadingView extends State<LoadingView> {
         ),
       );
 
-      if (mounted) {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.home,
-          (route) => false,
-        );
-      }
+      Navigator.pop(context);
     }
   }
 
@@ -157,7 +159,9 @@ class _LoadingView extends State<LoadingView> {
               ),
               const SizedBox(height: 16),
               Text(
-                AppLocalizations.of(context)!.loading,
+                widget.encryption != null
+                  ? AppLocalizations.of(context)!.loadingEncryption
+                  : AppLocalizations.of(context)!.loadingDecryption,
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,

@@ -133,7 +133,7 @@ class QrVaultEncryptionModel {
 
 }
 
-/// This model stores all data we can store on a QR code.
+/// This model stores all data we can store on a QR code encrypted.
 class QrVaultPayload {
   final String? username;
   final String? password;

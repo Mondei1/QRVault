@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:developer';
+import 'dart:async';
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -18,12 +21,16 @@ class HomeScreenView extends StatefulWidget {
 }
 
 class HomeScreenViewState extends State<HomeScreenView> {
+  StreamSubscription<Uri>? _linkSubscription;
+
   final MobileScannerController mobileScannerController =
       MobileScannerController(detectionTimeoutMs: 1000, autoZoom: false);
 
   @override
   void initState() {
     super.initState();
+
+    initDeepLinks();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.onScreenCreated?.call();
@@ -33,21 +40,49 @@ class HomeScreenViewState extends State<HomeScreenView> {
   @override
   void dispose() {
     super.dispose();
+    _linkSubscription?.cancel();
   }
 
-  void controlScanner({required bool scanning}) {
+  Future<void> initDeepLinks() async {
+    var _appLinks = AppLinks();
+
+    // Handle links when app is already running
+    _linkSubscription = _appLinks.uriLinkStream.listen(
+      (uri) {
+        handleDeepLink(uri);
+      },
+      onError: (err) {
+        print('Deep link error: $err');
+      },
+    );
+
+    // Handle link when app is launched from closed state
+    try {
+      final initialUri = await _appLinks.getInitialLink();
+      if (initialUri != null) {
+        handleDeepLink(initialUri);
+      }
+    } catch (e) {
+      print('Failed to get initial link: $e');
+    }
+  }
+
+  void handleDeepLink(Uri uri) {
+    _openQrCode(uri.toString());
+  }
+
+  void _controlScanner({required bool scanning}) {
     if (mounted) {
       try {
         if (!scanning) {
           mobileScannerController.stop();
         } else {
           mobileScannerController.start().catchError((e) => {
-            // If the scanner is not ready yet, wait for a short amount of time and try again.
-            // This could lead to an endless loop... ¯\_(ツ)_/¯
-            Future.delayed(Durations.medium1, () => {
-              controlScanner(scanning: scanning)
-            })
-          });
+                // If the scanner is not ready yet, wait for a short amount of time and try again.
+                // This could lead to an endless loop... ¯\_(ツ)_/¯
+                Future.delayed(Durations.medium1,
+                    () => {_controlScanner(scanning: scanning)})
+              });
         }
       } on Exception {
         log("Tja");
@@ -56,27 +91,31 @@ class HomeScreenViewState extends State<HomeScreenView> {
   }
 
   void _handleBarcode(BarcodeCapture barcodes) {
+    final barcode = barcodes.barcodes.firstOrNull;
+    if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
+      _openQrCode(barcode.displayValue!);
+    }
+  }
+
+  void _openQrCode(String uri) {
     if (mounted) {
-      final barcode = barcodes.barcodes.firstOrNull;
-      if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
-        try {
-          controlScanner(scanning: false);
-          QrURI qrURI = QrURI.fromUriString(barcode.displayValue!);
-          Navigator.push<String>(
-            context,
-            MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
-          );
-        } catch (e) {
-          if (e.toString().contains('Invalid URI scheme')) {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text(AppLocalizations.of(context)!.invalidUri),
-                backgroundColor: Colors.red,
-              ));
-            }
+      try {
+        _controlScanner(scanning: false);
+        QrURI qrURI = QrURI.fromUriString(uri);
+        Navigator.push<String>(
+          context,
+          MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
+        );
+      } catch (e) {
+        if (e.toString().contains('Invalid URI scheme')) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(AppLocalizations.of(context)!.invalidUri),
+              backgroundColor: Colors.red,
+            ));
           }
-          log(e.toString());
         }
+        log(e.toString());
       }
     }
   }
@@ -91,10 +130,10 @@ class HomeScreenViewState extends State<HomeScreenView> {
         onVisibilityChanged: (info) {
           if (info.visibleFraction > 0) {
             print("Widget is visible");
-            controlScanner(scanning: true);
+            _controlScanner(scanning: true);
           } else {
             print("Widget is not visible");
-            controlScanner(scanning: false);
+            _controlScanner(scanning: false);
           }
         },
         child: Scaffold(
