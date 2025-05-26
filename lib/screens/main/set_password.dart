@@ -186,37 +186,4 @@ class _SetPasswordViewState extends State<SetPasswordView> {
       ),
     );
   }
-
-  Future<void> _showMasterPasswordError(BuildContext context) {
-    return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Error"),
-          content: const Text(
-            // TODO: Translate
-            "You have set up a master password. You can use that or set one manually.",
-          ),
-          actions: <Widget>[
-            TextButton(
-              style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge),
-              child: const Text("Master password"),
-              onPressed: () {
-                // TODO: Implement master key decryption.
-              },
-            ),
-            TextButton(
-              style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.labelLarge),
-              child: const Text("Manual password"),
-              onPressed: () {
-                Navigator.of(context, rootNavigator: true).pop(null);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 }

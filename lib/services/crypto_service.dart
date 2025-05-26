@@ -8,12 +8,12 @@ class CryptoService {
   final QrURI? uri;
   final String? userPassword;
 
-  // Values recommended by_
+  // Values recommended by:
   // https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#argon2id
   final argon2 = Argon2id(
-    parallelism: 1,
-    memory: 19456,
-    iterations: 2,
+    parallelism: 4,
+    memory: 47104,
+    iterations: 8,
     hashLength: 32,
   );
 

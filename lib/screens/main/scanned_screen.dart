@@ -19,7 +19,7 @@ class ScannedScreen extends StatefulWidget {
 
 class _ScannedScreenState extends State<ScannedScreen> {
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _websiteController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
@@ -37,7 +37,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
       _usernameController.text = widget.payload.username!;
     }
     if (widget.payload.website != null) {
-      _emailController.text = widget.payload.website!;
+      _websiteController.text = widget.payload.website!;
     }
     if (widget.payload.password != null) {
       _passwordController.text = widget.payload.password!;
@@ -66,7 +66,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
   void dispose() {
     _otpTimer?.cancel();
     _usernameController.dispose();
-    _emailController.dispose();
+    _websiteController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -151,16 +151,16 @@ class _ScannedScreenState extends State<ScannedScreen> {
               ),
               const SizedBox(height: 16),
               TextField(
-                controller: _emailController,
+                controller: _websiteController,
                 readOnly: true,
-                keyboardType: TextInputType.emailAddress,
+                keyboardType: TextInputType.url,
                 decoration: InputDecoration(
-                  labelText: l10n.emailLabel,
+                  labelText: l10n.websiteLabel,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: const Icon(Icons.copy),
-                    tooltip: l10n.copyEmailTooltip,
-                    onPressed: () => _copyToClipboard(_emailController.text, l10n.emailLabel),
+                    tooltip: l10n.copyWebsiteTooltip,
+                    onPressed: () => _copyToClipboard(_websiteController.text, l10n.copyWebsiteTooltip),
                   ),
                 ),
               ),
