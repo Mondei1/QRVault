@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrvault/config/shared_preferences_helper.dart';
 import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
 import 'package:qrvault/services/native_calls.dart';
@@ -27,12 +28,13 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
   void enrollMasterPassword() async {
     var enrollResult = await NativeCalls.enrollMasterKey(_passwordController.text, _hintController.text);
 
-    if (enrollResult && mounted) {
+    if (!enrollResult && mounted) {
       _showMasterPasswordError(context);
       return;
     }
 
     // Navigate the user to the home screen since this is the last optional step.
+    await SharedPreferencesHelper.setFirstRunComplete();
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (_) => HomeScreenView()));
   }

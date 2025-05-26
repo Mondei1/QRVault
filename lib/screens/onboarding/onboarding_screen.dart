@@ -127,13 +127,14 @@ class OnboardingScreenState extends State<OnboardingScreen> {
                       )
                     else
                       const SizedBox(width: 80),
+                      if (_currentPage == _steps.length - 1 && _currentPage == 3)
+                      OutlinedButton(onPressed: _nextPage, child: Text("Überspringen"))
+                      else
                     FilledButton(
                       onPressed: _nextPage,
                       child: Text(_currentPage < _steps.length - 1
                           ? "Next"
-                          : (_currentPage == 3)
-                              ? "Überspringen"
-                              : "Finish"),
+                          : "Finish")
                     ),
                   ],
                 ),

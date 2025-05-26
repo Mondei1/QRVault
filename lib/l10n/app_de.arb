@@ -82,6 +82,8 @@
   "totpSecretFieldLabel": "TOTP-Geheimnis",
   "totpSecretFieldHint": "32-Byte-Geheimnis",
   "generateButtonLabel": "Generieren",
+  "generateManualButtonLabel": "manuelles Passwort nutzen",
+  "generateBiometricButtonLabel": "Biometrie benutzen",
   "notesFieldLabel": "Notizen",
   "notesFieldHint": "Notizen",
   "home": "Startseite",

@@ -8,7 +8,7 @@ class QrURI {
   final String iv;
   final String content;
   final String? hint;
-  final String version;
+  final int version;
 
   QrURI({
     required this.title,
@@ -58,7 +58,7 @@ class QrURI {
       iv: iv,
       content: contentFromUri,
       hint: hint,
-      version: versionParam,
+      version: int.parse(versionParam),
     );
   }
 
@@ -68,7 +68,7 @@ class QrURI {
     final String encodedIv = Uri.encodeComponent(iv);
     final String encodedContentForUri = Uri.encodeComponent(content);
 
-    final Map<String, String> queryParamsMap = {'v': version};
+    final Map<String, String> queryParamsMap = {'v': version.toString()};
     if (hint != null && hint!.isNotEmpty) {
       queryParamsMap['h'] = hint!;
     }
@@ -113,6 +113,27 @@ class QrURI {
   }
 }
 
+/// Some metadata about the QR code.
+class QrVaultEncryptionModel {
+  /// This is the current/latest URI protocol version.
+  static const currentVersion = 1;
+
+  final String title;
+  /// Clear text password used to (un)seal the content.
+  final String password;
+  final String? hint;
+  int version = currentVersion;
+
+  QrVaultEncryptionModel({
+    required this.title,
+    required this.password,
+    required this.version,
+    this.hint,
+  });
+
+}
+
+/// This model stores all data we can store on a QR code.
 class QrVaultPayload {
   final String? username;
   final String? password;
@@ -128,6 +149,8 @@ class QrVaultPayload {
     this.notes,
   });
 
+  /// Get a map containing all the properties and their shortened key names.
+  /// The keys are short to save storage space.
   Map<String, dynamic> toMap() {
     final map = <String, dynamic>{};
     if (username != null && username!.isNotEmpty) map['u'] = username;
@@ -138,6 +161,7 @@ class QrVaultPayload {
     return map;
   }
 
+  // Convert a map back into a model. Used after scanning and decrypting.
   factory QrVaultPayload.fromMap(Map<String, dynamic> map) {
     return QrVaultPayload(
       username: map['u'] as String?,

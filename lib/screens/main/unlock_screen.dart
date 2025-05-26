@@ -52,9 +52,6 @@ class _UnlockScreenState extends State<UnlockScreen> {
       return;
     }
 
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const LoadingView()));
-
     String decryptionPassword = _passwordController.text;
 
     if (useBiometrics) {
@@ -73,39 +70,12 @@ class _UnlockScreenState extends State<UnlockScreen> {
       decryptionPassword = result.$1;
     }
 
-    try {
-      final decryptionService = CryptoService.forDecryption(
-        uri: widget.qrURI,
-        userPassword: decryptionPassword,
-      );
+    var loadingView = LoadingView(
+        decryption: DecryptionMode(
+            payload: widget.qrURI, password: decryptionPassword));
 
-      final QrVaultPayload decryptedPayload =
-          await decryptionService.getDecryptedPayload();
-
-      if (!mounted) return;
-
-      Navigator.pop(context);
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ScannedScreen(
-            payload: decryptedPayload,
-            title: widget.qrURI.title,
-          ),
-        ),
-      );
-    } catch (e) {
-      log("Decryption error: $e");
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.decryptionFailedMessage),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => loadingView));
   }
 
   @override

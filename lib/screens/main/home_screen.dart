@@ -41,14 +41,16 @@ class HomeScreenViewState extends State<HomeScreenView> {
         if (!scanning) {
           mobileScannerController.stop();
         } else {
-          mobileScannerController.start();
+          mobileScannerController.start().catchError((e) => {
+            // If the scanner is not ready yet, wait for a short amount of time and try again.
+            // This could lead to an endless loop... ¯\_(ツ)_/¯
+            Future.delayed(Durations.medium1, () => {
+              controlScanner(scanning: scanning)
+            })
+          });
         }
-      } on MobileScannerException catch (e) {
-        // If the scanner is not ready yet, wait for a short amount of time and try again.
-        // This could lead to an endless loop... ¯\_(ツ)_/¯
-        Future.delayed(Durations.medium1, () => {
-          controlScanner(scanning: scanning)
-        });
+      } on Exception {
+        log("Tja");
       }
     }
   }
