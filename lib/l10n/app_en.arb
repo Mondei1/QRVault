@@ -30,7 +30,7 @@
   "useBiometrics": "Use Biometrics",
   "skip": "Skip",
   "loading": "Let us do some cryptography and we'll right back!",
-  "holdUp": "Hold up!",
+  "holdUp": "Hold up",
   "password": "Password",
   "unlockThisPassword": "Unlock this password",
   "unlockNamedPassword": "Unlock {passwordName}",

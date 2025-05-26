@@ -6,6 +6,7 @@ import 'package:qrvault/routes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qrvault/screens/main/unlock_screen.dart';
 import 'package:qrvault/services/commons.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 
 class HomeScreenView extends StatefulWidget {
   final VoidCallback? onScreenCreated;
@@ -17,8 +18,8 @@ class HomeScreenView extends StatefulWidget {
 }
 
 class HomeScreenViewState extends State<HomeScreenView> {
-  final MobileScannerController mobilescannercontroller = MobileScannerController(detectionTimeoutMs: 1000, autoZoom: false);
-  
+  final MobileScannerController mobileScannerController =
+      MobileScannerController(detectionTimeoutMs: 1000, autoZoom: false);
 
   @override
   void initState() {
@@ -37,9 +38,9 @@ class HomeScreenViewState extends State<HomeScreenView> {
   void controlScanner({required bool scanning}) {
     if (mounted) {
       if (!scanning) {
-        mobilescannercontroller.stop();
+        mobileScannerController.stop();
       } else {
-        mobilescannercontroller.start();
+        mobileScannerController.start();
       }
     }
   }
@@ -56,12 +57,12 @@ class HomeScreenViewState extends State<HomeScreenView> {
             MaterialPageRoute(builder: (context) => UnlockScreen(qrURI: qrURI)),
           );
         } catch (e) {
-          if(e.toString().contains('Invalid URI scheme')) {
+          if (e.toString().contains('Invalid URI scheme')) {
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context)!.invalidUri),
-                backgroundColor: Colors.red,                )
-              );
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context)!.invalidUri),
+                backgroundColor: Colors.red,
+              ));
             }
           }
           log(e.toString());
@@ -72,52 +73,64 @@ class HomeScreenViewState extends State<HomeScreenView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false, 
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: Text(
-          AppLocalizations.of(context)!.appTitle,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.language),
-            onPressed: () {
-              controlScanner(scanning: false);
-              Navigator.pushNamed(context, AppRoutes.language);
-            },
+    return VisibilityDetector(
+        key: Key("home-screen"),
+        // Ladies and gentlemen, this fu**ing change took 2,5h to troubleshoot.
+        // Finally, we can stop and resume the camera properly on navigation. The router
+        // didn't work for unforeseen reasons.
+        onVisibilityChanged: (info) {
+          if (info.visibleFraction > 0) {
+            print("Widget is visible");
+            controlScanner(scanning: true);
+          } else {
+            print("Widget is not visible");
+            controlScanner(scanning: false);
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            foregroundColor: Theme.of(context).colorScheme.onSurface,
+            title: Text(
+              AppLocalizations.of(context)!.appTitle,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.language),
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.language);
+                },
+              ),
+            ],
+            elevation: 1,
           ),
-        ],
-        elevation: 1,
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Stack(
-              children: [
-                MobileScanner(
-                  controller: mobilescannercontroller,
-                  onDetect: _handleBarcode),
-              ],
+          body: Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    MobileScanner(
+                        controller: mobileScannerController,
+                        onDetect: _handleBarcode),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(bottom: 30.0),
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.pushNamed(context, AppRoutes.create);
+              },
+              icon: const Icon(Icons.add_circle_outline),
+              label: Text(AppLocalizations.of(context)!.create),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             ),
           ),
-        ],
-      ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 30.0),
-        child: FloatingActionButton.extended(
-          onPressed: () {
-          controlScanner(scanning: false);
-           Navigator.pushNamed(context, AppRoutes.create);
-          },
-          icon: const Icon(Icons.add_circle_outline),
-          label: Text(AppLocalizations.of(context)!.create),
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-        ),
-      ),
-    );
+        ));
   }
 }
