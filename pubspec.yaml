@@ -49,7 +49,6 @@ dependencies:
   printing: ^5.14.2
   pdf: ^3.11.3
   visibility_detector: ^0.4.0+2
-  tuple: ^2.0.2
 
 dev_dependencies:
   flutter_test:
