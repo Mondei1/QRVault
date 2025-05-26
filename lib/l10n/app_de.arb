@@ -28,6 +28,7 @@
   "storedUnencrypted": "Unverschlüsselt gespeichert",
   "reinstallationInfo": "Wenn du diese App erneut installiert hast, solltest du dasselbe Master-Passwort wie zuvor verwenden. Du kannst es auch jederzeit manuell eingeben.",
   "useBiometrics": "Biometrie verwenden",
+  "biometricError": "Dein Master-Passwort konnte nicht verwendet werden.",
   "skip": "Überspringen",
   "loading": "Wir verschlüsseln alles und sind gleich wieder zurück!",
   "holdUp": "Einen Moment",

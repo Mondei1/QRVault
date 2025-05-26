@@ -37,17 +37,29 @@ class MainActivity : FlutterFragmentActivity() {
                 }
                 "enrollMasterKey" -> {
                     call.argument<String>("userSecret")?.let { userSecret ->
-                        // We must call a coroutine in order to use suspend (aka async) functions. Weird.
-                        CoroutineScope(Dispatchers.Main.immediate).launch {
-                            val re = masterKey.enrollMasterKey(this@MainActivity, userSecret)
-                            result.success(re)
+                        call.argument<String>("userHint")?.let { userHint ->
+                            // We must call a coroutine in order to use suspend (aka async) functions. Weird.
+                            CoroutineScope(Dispatchers.Main.immediate).launch {
+                                val re = masterKey.enrollMasterKey(
+                                    this@MainActivity,
+                                    userSecret,
+                                    userHint
+                                )
+                                result.success(re)
+                            }
                         }
                     }
                 }
                 "retrieveMasterKey" -> {
                     CoroutineScope(Dispatchers.Main.immediate).launch {
-                        val re = masterKey.retrieveMasterKey(this@MainActivity)
-                        result.success(re)
+                        var re: List<String>? = masterKey.retrieveMasterKey(this@MainActivity)
+                        if (re == null) {
+                            result.success(null)
+                            return@launch
+                        }
+                        re = re.toList()
+
+                        result.success(re.toList())
                     }
                 }
                 else -> {
@@ -60,11 +72,8 @@ class MainActivity : FlutterFragmentActivity() {
             when (call.method) {
                 "getAppLocale" -> {
                     // Get the app-specific locale if available (Android 13+)
-                    val locale = if (Build.VERSION.SDK_INT >= 33) {
+                    val locale =
                         this.resources.configuration.locales[0]
-                    } else {
-                        Locale.getDefault()
-                    }
                     result.success(locale.toLanguageTag())
                 }
                 "setAppLocale" -> {

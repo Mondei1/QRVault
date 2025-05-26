@@ -25,7 +25,7 @@ class _MasterPasswordSetupViewState extends State<MasterPasswordSetupView> {
 
   /// This will enroll a master key on the Android device.
   void enrollMasterPassword() async {
-    var enrollResult = await NativeCalls.enrollMasterKey(_passwordController.text);
+    var enrollResult = await NativeCalls.enrollMasterKey(_passwordController.text, _hintController.text);
 
     if (enrollResult && mounted) {
       _showMasterPasswordError(context);

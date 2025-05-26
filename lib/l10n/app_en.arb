@@ -28,6 +28,7 @@
   "storedUnencrypted": "Stored Unencrypted",
   "reinstallationInfo": "If you have reinstalled this app, you should use the same master password that you used before. You can always enter manually too.",
   "useBiometrics": "Use Biometrics",
+  "biometricError": "Your master password couldn't be used.",
   "skip": "Skip",
   "loading": "Let us do some cryptography and we'll right back!",
   "holdUp": "Hold up",

@@ -37,10 +37,18 @@ class HomeScreenViewState extends State<HomeScreenView> {
 
   void controlScanner({required bool scanning}) {
     if (mounted) {
-      if (!scanning) {
-        mobileScannerController.stop();
-      } else {
-        mobileScannerController.start();
+      try {
+        if (!scanning) {
+          mobileScannerController.stop();
+        } else {
+          mobileScannerController.start();
+        }
+      } on MobileScannerException catch (e) {
+        // If the scanner is not ready yet, wait for a short amount of time and try again.
+        // This could lead to an endless loop... ¯\_(ツ)_/¯
+        Future.delayed(Durations.medium1, () => {
+          controlScanner(scanning: scanning)
+        });
       }
     }
   }

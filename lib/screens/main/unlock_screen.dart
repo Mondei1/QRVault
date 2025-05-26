@@ -5,6 +5,7 @@ import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/services/crypto_service.dart';
 import 'package:qrvault/screens/main/scanned_screen.dart';
 import 'package:qrvault/screens/main/loading_screen.dart';
+import 'package:qrvault/services/native_calls.dart';
 
 class UnlockScreen extends StatefulWidget {
   final QrURI qrURI;
@@ -18,6 +19,7 @@ class UnlockScreen extends StatefulWidget {
 class _UnlockScreenState extends State<UnlockScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isMasterPasswordAvailable = false;
 
   @override
   void dispose() {
@@ -25,28 +27,60 @@ class _UnlockScreenState extends State<UnlockScreen> {
     super.dispose();
   }
 
-  Future<void> _unlockAndNavigate() async {
-    if (_passwordController.text.isEmpty) {
+  @override
+  void initState() {
+    _checkMasterPasswordAvailability();
+    super.initState();
+  }
+
+  Future<void> _checkMasterPasswordAvailability() async {
+    bool result = await NativeCalls.hasMasterKey();
+
+    setState(() {
+      _isMasterPasswordAvailable = result;
+    });
+  }
+
+  Future<void> _unlockAndNavigate({bool useBiometrics = false}) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (_passwordController.text.isEmpty && !useBiometrics) {
       if (!mounted) return;
-      final l10n = AppLocalizations.of(context)!;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.enterPasswordMessage)),
       );
       return;
     }
 
-    Navigator.push(context, 
-      MaterialPageRoute(builder: (context) => const LoadingView())
-    );
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const LoadingView()));
+
+    String decryptionPassword = _passwordController.text;
+
+    if (useBiometrics) {
+      (String, String)? result = (await NativeCalls.retrieveMasterKey());
+
+      if (result == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.biometricError)),
+          );
+        }
+
+        return;
+      }
+
+      decryptionPassword = result.$1;
+    }
 
     try {
       final decryptionService = CryptoService.forDecryption(
         uri: widget.qrURI,
-        userPassword: _passwordController.text,
+        userPassword: decryptionPassword,
       );
 
-      final QrVaultPayload decryptedPayload = await decryptionService.getDecryptedPayload();
+      final QrVaultPayload decryptedPayload =
+          await decryptionService.getDecryptedPayload();
 
       if (!mounted) return;
 
@@ -60,12 +94,11 @@ class _UnlockScreenState extends State<UnlockScreen> {
           ),
         ),
       );
-
     } catch (e) {
       log("Decryption error: $e");
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.decryptionFailedMessage),
@@ -94,7 +127,8 @@ class _UnlockScreenState extends State<UnlockScreen> {
               const SizedBox(height: 8),
               Text(
                 l10n.unlockScreenTitle(widget.qrURI.title),
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -105,7 +139,9 @@ class _UnlockScreenState extends State<UnlockScreen> {
                   labelText: l10n.password,
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_isPasswordVisible ? Icons.visibility_off : Icons.visibility),
+                    icon: Icon(_isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility),
                     onPressed: () {
                       setState(() {
                         _isPasswordVisible = !_isPasswordVisible;
@@ -120,7 +156,10 @@ class _UnlockScreenState extends State<UnlockScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Text(
                     l10n.passwordHintText(widget.qrURI.hint!),
-                    style: const TextStyle(fontSize: 12, fontStyle: FontStyle.italic, color: Colors.grey),
+                    style: const TextStyle(
+                        fontSize: 12,
+                        fontStyle: FontStyle.italic,
+                        color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -129,55 +168,59 @@ class _UnlockScreenState extends State<UnlockScreen> {
                 icon: Icon(Icons.lock_open, color: colorScheme.onPrimary),
                 label: Text(l10n.unlockButton),
                 style: ElevatedButton.styleFrom(
-                backgroundColor: colorScheme.primary,
-                foregroundColor: colorScheme.onPrimary,
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                textStyle: textTheme.titleMedium?.copyWith(color: colorScheme.onPrimary),
-                minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  textStyle: textTheme.titleMedium
+                      ?.copyWith(color: colorScheme.onPrimary),
+                  minimumSize: const Size(double.infinity, 50),
                 ),
-               onPressed: _unlockAndNavigate,
+                onPressed: _unlockAndNavigate,
               ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.only(
-          left: 16.0,
-          right: 16.0,
-          bottom: MediaQuery.of(context).padding.bottom + 16.0,
-          top: 8.0,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
+      bottomNavigationBar: Visibility(
+          visible: _isMasterPasswordAvailable,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              bottom: MediaQuery.of(context).padding.bottom + 16.0,
+              top: 8.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                const Expanded(child: Divider(endIndent: 10)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Text(l10n.orDividerText, style: textTheme.labelSmall),
+                Row(
+                  children: [
+                    const Expanded(child: Divider(endIndent: 10)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child:
+                          Text(l10n.orDividerText, style: textTheme.labelSmall),
+                    ),
+                    const Expanded(child: Divider(indent: 10)),
+                  ],
                 ),
-                const Expanded(child: Divider(indent: 10)),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: colorScheme.primary,
+                    side: BorderSide(color: colorScheme.outline),
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    textStyle: textTheme.titleMedium,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: Text(l10n.useBiometricsButton),
+                  onPressed: () {
+                    _unlockAndNavigate(useBiometrics: true);
+                  },
+                ),
               ],
             ),
-            const SizedBox(height: 8),
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colorScheme.primary,
-                side: BorderSide(color: colorScheme.outline),
-                padding: const EdgeInsets.symmetric(vertical: 16.0),
-                textStyle: textTheme.titleMedium,
-                minimumSize: const Size(double.infinity, 50),
-              ),
-              child: Text(l10n.useBiometricsButton),
-              onPressed: () {
-                // TODO: Implement biometrics
-              },
-            ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }

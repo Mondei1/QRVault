@@ -13,13 +13,14 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import java.nio.ByteBuffer
 import java.security.KeyStore
 import java.util.logging.Logger
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
+import javax.crypto.spec.GCMParameterSpec
 import kotlin.coroutines.resume
-
 
 /**
  * This is our Android-specific crypto implementation to securely seal and unseal the master key.
@@ -105,8 +106,7 @@ class MasterKey(private val context: Context) {
             val keyGenParameter = keyGenParameterSpecBuilder
                 .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                // TODO: Is `false` okay here? Theoretically, we want control over the IV but we could
-                //       enforce Android to create one for us.
+                // Force Android to generate a secure IV
                 .setRandomizedEncryptionRequired(true)
                 // Force user authentication in general for access
                 .setUserAuthenticationRequired(true)
@@ -133,7 +133,7 @@ class MasterKey(private val context: Context) {
      * device's enrolled AES key.
      * @param userSecret "Content" of the new file which MUST be a 32 byte Argon2id hash.
      */
-    suspend fun enrollMasterKey(activity: FragmentActivity, userSecret: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun enrollMasterKey(activity: FragmentActivity, userSecret: String, userHint: String): Boolean = withContext(Dispatchers.IO) {
         if (!hasSecureStorage()) {
             logger.severe("This device has no secure storage. A master key cannot be safely stored on this device.")
             return@withContext false
@@ -150,6 +150,8 @@ class MasterKey(private val context: Context) {
         try {
             if (!keyFile.createNewFile()) {
                 logger.warning("A master key is already set. The old one will be overridden!")
+                keyFile.delete()
+                keyFile.createNewFile()
             }
         } catch (e: IOException) {
             logger.severe("Failed to create new key file: ${e.message}")
@@ -187,7 +189,18 @@ class MasterKey(private val context: Context) {
         if (authResult) {
             try {
                 val encryptedData = cipher.doFinal(userKeyBinary)
-                keyFile.outputStream().use { it.write(encryptedData) }
+
+                /* The master key file looks like this:
+                 * [12 byte IV][Size of encrypted content][Encrypted content][Cleartext hint]
+                 */
+                keyFile.outputStream().use {
+                    it.write(cipher.iv)
+                    it.write(ByteBuffer.allocate(Int.SIZE_BYTES).putInt(encryptedData.size).array())
+                    it.write(encryptedData)
+                    it.write(userHint.toByteArray())
+                    it.flush();
+                }
+
                 return@withContext true
             } catch (e: Exception) {
                 logger.severe("Master key file couldn't be written: ${e.message}")
@@ -198,7 +211,7 @@ class MasterKey(private val context: Context) {
         }
     }
 
-    suspend fun retrieveMasterKey(activity: FragmentActivity): String? = withContext(Dispatchers.IO) {
+    suspend fun retrieveMasterKey(activity: FragmentActivity): List<String>? = withContext(Dispatchers.IO) {
         if (!hasSecureStorage()) {
             logger.severe("This device has no secure storage. A master key cannot be retrieved.")
             return@withContext null
@@ -214,11 +227,26 @@ class MasterKey(private val context: Context) {
             return@withContext null
         }
 
-        val encryptedMasterKey = keyFile.readBytes();
+        val keyFile: ByteArray = keyFile.readBytes()
+
+        // Extract our IV from the file by taking the first 12 bytes.
+        val ivSpec = GCMParameterSpec(128, keyFile.copyOfRange(0, 12))
+
+        // Extract the encrypted content from the file by taking the remaining bytes.
+        val encryptedMasterKeySize = ByteBuffer.wrap(keyFile.copyOfRange(12, 16)).getInt()
+        val encryptedMasterKey: ByteArray = keyFile.copyOfRange(16, 16 + encryptedMasterKeySize)
+
+        var hint: String = ""
+
+        // We need to check if we aren't at the end already. The user could not have set a hint.
+        if (encryptedMasterKeySize + 16 < keyFile.size) {
+            hint = String(keyFile.copyOfRange(16 + encryptedMasterKeySize, keyFile.size))
+        }
 
         val deviceSecret = keyStore.getKey(KEY_ALIAS, null) as SecretKey
+
         val cipher = Cipher.getInstance(CIPHER_MODE)
-        cipher.init(Cipher.DECRYPT_MODE, deviceSecret)
+        cipher.init(Cipher.DECRYPT_MODE, deviceSecret, ivSpec)
 
         val authResult = withContext(Dispatchers.Main) {
             suspendCancellableCoroutine { continuation ->
@@ -243,16 +271,14 @@ class MasterKey(private val context: Context) {
                 val decryptedMasterKey = cipher.doFinal(encryptedMasterKey)
 
                 val userKey = decryptedMasterKey.decodeToString()
-                return@withContext userKey
+                return@withContext listOf<String>(userKey, hint)
             } catch (e: Exception) {
-                logger.severe("Master key file couldn't be written: ${e.message}")
+                logger.severe("Master key file couldn't be read: ${e.message}")
                 return@withContext null
             }
-        } else {
-            return@withContext null
         }
 
-        return@withContext ""
+        return@withContext null
     }
     /**
      * This opens the Android dialogue where the user has to authenticate.
@@ -282,9 +308,9 @@ class MasterKey(private val context: Context) {
 
 
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Set master password")
-            .setSubtitle("Authenticate to store your master password securely.")
-            .setDescription("This will allow QRVault to securely encrypt your master key on your smartphone.")
+            .setTitle("Master Key access")
+            .setSubtitle("Authenticate to access your master password.")
+            .setDescription("This will allow QRVault to securely access your master key.")
             .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             .build()
 
