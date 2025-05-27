@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:async';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +10,7 @@ import 'package:qrvault/screens/main/unlock_screen.dart';
 import 'package:qrvault/services/commons.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+///Screen for the home page
 class HomeScreenView extends StatefulWidget {
   final VoidCallback? onScreenCreated;
 
@@ -23,6 +23,7 @@ class HomeScreenView extends StatefulWidget {
 class HomeScreenViewState extends State<HomeScreenView> {
   StreamSubscription<Uri>? _linkSubscription;
 
+  ///Controller for the QR code scanner 
   final MobileScannerController mobileScannerController =
       MobileScannerController(detectionTimeoutMs: 1000, autoZoom: false);
 
@@ -90,6 +91,7 @@ class HomeScreenViewState extends State<HomeScreenView> {
     }
   }
 
+  ///Function to handle the barcode
   void _handleBarcode(BarcodeCapture barcodes) {
     final barcode = barcodes.barcodes.firstOrNull;
     if (barcode?.displayValue != null && barcode!.displayValue!.isNotEmpty) {
@@ -129,10 +131,10 @@ class HomeScreenViewState extends State<HomeScreenView> {
         // didn't work for unforeseen reasons.
         onVisibilityChanged: (info) {
           if (info.visibleFraction > 0) {
-            print("Widget is visible");
+            log("Widget is visible");
             _controlScanner(scanning: true);
           } else {
-            print("Widget is not visible");
+            log("Widget is not visible");
             _controlScanner(scanning: false);
           }
         },
@@ -161,6 +163,7 @@ class HomeScreenViewState extends State<HomeScreenView> {
               Expanded(
                 child: Stack(
                   children: [
+                    //QR code scanner
                     MobileScanner(
                         controller: mobileScannerController,
                         onDetect: _handleBarcode),

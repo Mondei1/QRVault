@@ -31,6 +31,7 @@ class CryptoService {
       : uri = null,
         userPassword = null;
 
+  ///Function to generate a random ASCII string
   String _generateRandomAsciiString(int length) {
     final random = Random.secure();
     const asciiStart = 33;
@@ -39,11 +40,13 @@ class CryptoService {
         length, (_) => asciiStart + random.nextInt(asciiEnd - asciiStart + 1)));
   }
 
+  ///Function to generate an Argon2id key
   Future<SecretKey> _generateArgon2idKey(
       {required String password, required List<int> saltBytes}) async {
     return argon2.deriveKeyFromPassword(password: password, nonce: saltBytes);
   }
 
+  ///Function to generate an encrypted QR code URI object
   Future<QrURI> generateQrUri({
     required QrVaultPayload payload,
     required String title,

@@ -9,6 +9,7 @@ import 'package:qrvault/screens/main/set_password.dart';
 import 'package:qrvault/routes.dart';
 import 'package:qrvault/services/native_calls.dart';
 
+///Screen for creating a new QR code
 class CreateScreenView extends StatefulWidget {
   const CreateScreenView({super.key});
 
@@ -21,6 +22,7 @@ class _CreateScreenView extends State<CreateScreenView> {
 
   bool _isMasterPasswordAvailable = false;
 
+  //Controllers for the form fields
   final _titleController = TextEditingController();
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
@@ -72,6 +74,7 @@ class _CreateScreenView extends State<CreateScreenView> {
       return;
     }
 
+    //Create a new QR code payload based on the form fields
     final payload = QrVaultPayload(
       username: _usernameController.text,
       password: _passwordController.text,
@@ -80,6 +83,7 @@ class _CreateScreenView extends State<CreateScreenView> {
       notes: _notesController.text,
     );
 
+    //Navigate to the set password screen
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -109,6 +113,7 @@ class _CreateScreenView extends State<CreateScreenView> {
       return;
     }
 
+    //Create a new QR code payload based on the form fields
     final payload = QrVaultPayload(
       username: _usernameController.text,
       password: _passwordController.text,
@@ -128,6 +133,7 @@ class _CreateScreenView extends State<CreateScreenView> {
       ),
     );
 
+    //Navigate to the loading screen
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => loadingView),
@@ -169,6 +175,7 @@ class _CreateScreenView extends State<CreateScreenView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                //Form fields
                 TextFormField(
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -229,6 +236,7 @@ class _CreateScreenView extends State<CreateScreenView> {
                               icon: const Icon(Icons.casino),
                               onPressed: () async {
                                 final String? generatedPassword =
+                                //await because the password generator screen will return a string when popped
                                     await Navigator.push<String>(
                                   context,
                                   MaterialPageRoute(

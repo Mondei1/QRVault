@@ -7,8 +7,10 @@ import 'dart:developer';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
+///Class for the QR code generator and opening the QR code in the print dialog
 class QrCodeGenerator {
 
+  ///Function to generate a QR code image data
   static Future<ByteData?> generateQrImageData(String uri, {double size = 200.0}) async {
     return await QrPainter(
       data: uri,
@@ -17,10 +19,12 @@ class QrCodeGenerator {
     ).toImageData(size);
   }
 
+  ///Function to print a QR code
   static Future<void> printQrCode(BuildContext context, String title, String uri, {String? hint}) async {
     final l10n = AppLocalizations.of(context)!;
     final doc = pw.Document();
     
+    //Generate the QR code image
     final ByteData? qrImageData = await generateQrImageData(uri, size: 500);
     if (qrImageData == null) {
       log(l10n.qrCodePrintingError);
@@ -28,6 +32,7 @@ class QrCodeGenerator {
     }
     final Uint8List qrBytes = qrImageData.buffer.asUint8List();
 
+    //create pdf document with QR Code image, title and hint
     doc.addPage(pw.Page(
         pageFormat: PdfPageFormat.a4,
         build: (pw.Context context) {
@@ -51,6 +56,7 @@ class QrCodeGenerator {
             ),
           );
         }));
+    //open pdf in print dialog
     await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => doc.save());
   }
 }  

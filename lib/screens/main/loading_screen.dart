@@ -21,6 +21,7 @@ class DecryptionMode {
   DecryptionMode({required this.payload, required this.password});
 }
 
+//Screen for the loading screen
 class LoadingView extends StatefulWidget {
   final EncryptionMode? encryption;
   final DecryptionMode? decryption;

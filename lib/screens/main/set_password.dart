@@ -3,10 +3,6 @@ import 'package:qrvault/screens/main/password_generator_screen.dart';
 import 'package:qrvault/screens/main/loading_screen.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/services/commons.dart';
-import 'package:qrvault/services/crypto_service.dart';
-
-import 'package:qrvault/services/qrcode_generator.dart';
-import 'package:qrvault/routes.dart';
 
 class SetPasswordView extends StatefulWidget {
   final QrVaultPayload payload;
@@ -166,6 +162,7 @@ class _SetPasswordViewState extends State<SetPasswordView> {
               return;
             }
 
+            //Create a new loading view with encryption mode
             var loadingView = LoadingView(
               encryption: EncryptionMode(
                 payload: widget.payload,
@@ -177,6 +174,7 @@ class _SetPasswordViewState extends State<SetPasswordView> {
               ),
             );
 
+            //Navigate to the loading view
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => loadingView),

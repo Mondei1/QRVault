@@ -2,6 +2,7 @@ import 'dart:core';
 import 'dart:typed_data';
 import 'package:msgpack_dart/msgpack_dart.dart' as msgpack;
 
+///Class for the QR code URI when seperated
 class QrURI {
   final String title;
   final String salt;
@@ -19,6 +20,7 @@ class QrURI {
     required this.version,
   });
 
+  ///Function to parse the URI string to a QrURI object
   static QrURI fromUriString(String uriString) {
     final Uri parsedUri = Uri.parse(uriString);
 
@@ -26,12 +28,14 @@ class QrURI {
       throw ArgumentError('Invalid URI scheme');
     }
 
+    //Decode the title because parsedUri.host dont encode by default
     final String title = Uri.decodeComponent(parsedUri.host);
 
     if (title.isEmpty && !uriString.startsWith("qrv:/")) {
       throw ArgumentError('Title (host part of URI) is missing or empty. URI format should be: qrv://title/salt/iv/content');
     }
 
+    //Get the path segments
     final List<String> pathSegments = parsedUri.pathSegments;
 
     if (pathSegments.length != 3) {
@@ -62,6 +66,7 @@ class QrURI {
     );
   }
 
+  ///Function to convert the QrURI object to a URI string
   String toUriString() {
     final String encodedTitle = Uri.encodeComponent(title);
     final String encodedSalt = Uri.encodeComponent(salt);
@@ -74,6 +79,7 @@ class QrURI {
     }
 
     String queryString = "";
+    //build the query string and add a ?, hint is optional but version is required
     if (queryParamsMap.isNotEmpty) {
         queryString = Uri(queryParameters: queryParamsMap).query;
         if (queryString.isNotEmpty) {
