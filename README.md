@@ -2,6 +2,25 @@
 
 This is a cold storage password manager. Print out your most sensitive credentials as an encrypted QR code to make them unhackable and safe from prying eyes.
 
+## Build
+
+> [!NOTE]
+> This chapter is for developers. Consider using our [released binaries](https://github.com/Mondei1/QRVault/releases) on GitHub if you just want to use it.
+
+To build the project, you need a working Flutter development environment. See [official installation instructions](https://docs.flutter.dev/get-started/install). Optionally, download [Android Studio](https://developer.android.com/studio) to build an Android app.
+
+Next, clone this repository:
+```sh
+https://github.com/Mondei1/QRVault
+```
+
+To build the final app, simply run:
+```sh
+flutter build apk # or `flutter build web` for the web version
+```
+
+This should give you a working app you can use.
+
 ## QR code protocol
 The QR code itself stores an URI that looks like this:
 ```
