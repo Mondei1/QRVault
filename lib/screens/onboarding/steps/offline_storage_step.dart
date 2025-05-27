@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+//Screen for the offline storage step
 class OfflineStorageStepView extends StatelessWidget {
   const OfflineStorageStepView({super.key});
 

@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+//Screen for the password generator
 class PasswordGeneratorScreen extends StatefulWidget {
   const PasswordGeneratorScreen({super.key});
 
@@ -10,6 +11,7 @@ class PasswordGeneratorScreen extends StatefulWidget {
 }
 
 class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
+  ///Controller for the password field
   final _passwordController = TextEditingController();
   final Random _random = Random();
   
@@ -17,6 +19,7 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
   final double _minPasswordLength = 8;
   final double _maxPasswordLength = 32;
 
+  ///Controllers for the switch fields
   bool _includeUppercase = true;
   bool _includeLowercase = true;
   bool _includeNumbers = true;
@@ -35,12 +38,14 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
     final numbers = _includeNumbers ? '0123456789' : '';
     final symbols = _includeSymbols ? '!@#\$%^&*()_+-=[]{}|;:,.<>?' : '';
 
+    ///All characters based on the switch fields
     final allChars = '$uppercase$lowercase$numbers$symbols';
 
     if(allChars.isEmpty) {
       return AppLocalizations.of(context)?.errorNoCharTypesSelected ?? 'Select char types';
     }
 
+    ///Generate a random password
     return List.generate(length, (_) => allChars[_random.nextInt(allChars.length)])
     .join();
   }
@@ -235,6 +240,7 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
           onPressed: () {
             final password = _passwordController.text;
 
+            //Navigate back to the previous screen with the generated password so it can be used in the create QR code screen
             Navigator.pop(
                 context,
                 password

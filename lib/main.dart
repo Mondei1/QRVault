@@ -4,7 +4,6 @@ import 'package:dynamic_color/dynamic_color.dart';
 import 'package:qrvault/config/language_service.dart';
 import 'package:qrvault/config/shared_preferences_helper.dart';
 import 'package:qrvault/routes.dart';
-import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/theme/theme_aware_status_bar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

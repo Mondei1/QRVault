@@ -5,6 +5,7 @@ import 'package:qrvault/screens/main/home_screen.dart';
 import 'package:qrvault/screens/main/password_generator_screen.dart';
 import 'package:qrvault/services/native_calls.dart';
 
+//Screen for the master password setup
 class MasterPasswordSetupView extends StatefulWidget {
   const MasterPasswordSetupView({super.key});
 

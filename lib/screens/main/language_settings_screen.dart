@@ -3,6 +3,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/config/language_service.dart';
 import 'package:qrvault/routes.dart';
 
+///Screen for the language settings
 class LanguageSettingsScreen extends StatefulWidget {
   const LanguageSettingsScreen({super.key});
 

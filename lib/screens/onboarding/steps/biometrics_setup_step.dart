@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/screens/onboarding/steps/master_password_setup_view.dart';
 
+//Screen for the biometrics setup step
 class BiometricsSetupStepView extends StatefulWidget {
   const BiometricsSetupStepView({super.key});
 

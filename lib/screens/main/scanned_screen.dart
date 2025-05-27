@@ -7,6 +7,7 @@ import 'package:totp/totp.dart';
 import 'package:qrvault/services/commons.dart';
 import 'package:qrvault/routes.dart';
 
+//Screen for the scanned QR code
 class ScannedScreen extends StatefulWidget {
   final QrVaultPayload payload;
   final String title;
@@ -18,11 +19,13 @@ class ScannedScreen extends StatefulWidget {
 }
 
 class _ScannedScreenState extends State<ScannedScreen> {
+  ///Controllers for the text fields
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
 
+  ///Controllers for the TOTP generator
   late final Totp _totpGenerator;
   String _currentOtp = "";
   String _previousOtp = "";
@@ -201,6 +204,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
                     const SizedBox(height: 12),
                     Row(
                       children: [
+                        //Fields for the previous, current and next OTP
                         Expanded(
                           flex: 2,
                           child: Text(
@@ -228,6 +232,7 @@ class _ScannedScreenState extends State<ScannedScreen> {
                       ],
                     ),
                     const SizedBox(height: 12),
+                    //Progress bar for the TOTP
                     LinearProgressIndicator(
                       value: _otpProgress,
                       backgroundColor: colorScheme.surfaceContainerHighest,

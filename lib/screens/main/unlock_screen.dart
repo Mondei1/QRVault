@@ -1,12 +1,10 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrvault/services/commons.dart';
-import 'package:qrvault/services/crypto_service.dart';
-import 'package:qrvault/screens/main/scanned_screen.dart';
 import 'package:qrvault/screens/main/loading_screen.dart';
 import 'package:qrvault/services/native_calls.dart';
 
+///Screen for the unlock screen
 class UnlockScreen extends StatefulWidget {
   final QrURI qrURI;
 
@@ -41,6 +39,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
     });
   }
 
+  ///Function to unlock the QR code and navigate to the loading screen
   Future<void> _unlockAndNavigate({bool useBiometrics = false}) async {
     final l10n = AppLocalizations.of(context)!;
     if (_passwordController.text.isEmpty && !useBiometrics) {

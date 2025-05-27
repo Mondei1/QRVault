@@ -7,6 +7,7 @@ import 'package:qrvault/screens/onboarding/steps/security_step.dart';
 import 'package:qrvault/screens/onboarding/steps/welcome_step.dart';
 import 'package:qrvault/services/native_calls.dart';
 
+//Screen for the onboarding process
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
